@@ -1,0 +1,44 @@
+Package: OPWeight
+Type: Package
+Title: Optimal Pvalue Weighting
+Version: 0.99.0
+Date: 2017-02-26
+Author: Mohamad S. Hasan
+Maintainer: Mohamad S. Hasan <shakilmohamad7@gmail.com>
+Description: This package perform weighted-pvalue based multiple hypothesis test 
+    and provides corresponding information such as ranking probability, weight, 
+    significant tests, etc . To conduct this testing procedure, the testing 
+    method apply a probabilistic relationship between the test rank and the 
+    corresponding test effect size.
+Depends: 
+    R (>= 3.3.0)
+License: Artistic-2.0
+LazyData: true
+Imports:
+    BiocGenerics,
+    fdrtool,
+    graphics,
+    lpsymphony,
+    MASS,
+    methods,
+    qvalue,
+    stats, 
+    slam,
+    tibble
+Suggests:
+    ggplot2,
+    scales,
+    DESeq2,
+    airway,
+    Matrix,
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    devtools
+VignetteBuilder: knitr
+biocViews:
+    MultipleComparison,
+    RNASeq
+RoxygenNote: 6.0.1
+URL: https://github.com/mshasan/OPWeight
+Bugreports: https://github.com/mshasan/OPWeight/issues
