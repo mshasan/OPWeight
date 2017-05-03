@@ -15,6 +15,7 @@ statistics and does not significantly affect by the variation of the effect size
 
 You can install the package as follows:
 
+```{r}
 library("devtools")
 
 # Bioconductor prerequisites
@@ -25,4 +26,4 @@ biocLite(c("genefilter","DESeq2","qvalue","Biobase",
 # install OPWeight
 install_github("vladchimescu/lpsymphony", subdir="lpsymphony")
 install_github("mshasan/OPWeight")
-
+```
