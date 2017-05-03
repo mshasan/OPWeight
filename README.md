@@ -12,3 +12,17 @@ the family wise error rate as well as false discovery rate.
 7) The Proposed method is not sensitive to correlations between the test 
 statistics and does not significantly affect by the variation of the effect sizes. 
 
+
+You can install the package as follows:
+
+library("devtools")
+
+# Bioconductor prerequisites
+source("http://bioconductor.org/biocLite.R")
+biocLite(c("genefilter","DESeq2","qvalue","Biobase",
+            "BiocParallel","airway","pasilla", "BiocStyle"))
+    
+# install OPWeight
+install_github("vladchimescu/lpsymphony", subdir="lpsymphony")
+install_github("mshasan/OPWeight")
+
