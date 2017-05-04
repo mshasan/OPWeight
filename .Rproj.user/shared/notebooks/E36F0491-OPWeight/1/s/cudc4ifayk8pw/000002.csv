@@ -1,0 +1,4 @@
+"0","library(""OPWeight"")"
+"0","opw_results <- opw(pvalue = de_res_air$pvalue, filter = de_res_air $baseMean, "
+"0","                  test =de_res_air$stat, alpha = .1, tail = 2, "
+"0","                  effectType = ""continuous"", method = ""BH"")"
