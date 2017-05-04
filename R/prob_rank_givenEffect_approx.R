@@ -1,49 +1,57 @@
-#' @title Probbaility of rank of test given effect size by normal approximation
+#' @title Probability of rank of test given effect size by normal approximation
 #'
-#' @description A normal approximation to comnpute the probbaility of rank of a
+#' @description A normal approximation to comnpute the probability of rank of a
 #' test being higher than any other test given the effect size from external
 #' information.
-#' @param k rank of the tests
-#' @param et actual data test effect for importance sampling
-#' @param ey filter test efffect from external information
+#' @param k rank of a test
+#' @param et effect of the targeted test for importance sampling
+#' @param ey mean/median filter efffect from external information
 #' @param nrep number of replications for importance sampling
 #' @param m0 number of true null hypothesis
 #' @param m1 number of true alternative hypothesis
-#' @param effectType type of effect size c("binary","continuous")
+#' @param effectType type of effect sizes, c("binary","continuous")
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
-#' then \code{et}  and \code{ey} should be mean of the test and filter effect sizes,
-#' respectively. This is called hypothesis testing for the continuous effect sizes.
+#' then \code{ey} should be mean of the filter effect sizes,
+#' This is called hypothesis testing for the continuous effect sizes.\cr
+#'
 #' If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
-#' then \code{et} and \code{ey} should be median or any discrete value of the
-#' test and filter effect sizes. This is called hypothesis testing for the Binary
-#' effect sizes.
-#' @author Mohamad S. Hasan, mshasan@uga.edu
+#' then \code{ey} should be median or any discrete value of the
+#' filter effect sizes. This is called hypothesis testing for the Binary
+#' effect sizes.\cr
+#'
+#' \code{m1} and \code{m0} can be estimated using \code{qvalue} from
+#' a bioconductor package \code{qvalue}.
+#'
+#' @author Mohamad S. Hasan and Paul Schliekelman
 #' @export
 #' @import stats
 #' @seealso \code{\link{dnorm}} \code{\link{pnorm}} \code{\link{rnorm}}
-#' @return \code{prob} probability of the rank of the test
-#' @examples
-#' # compute the probability of rank for the third test
-#' prob <- prob_rank_givenEffect_approx(k=3, et=0, ey=0, nrep=10000, m0=50, m1=50,
-#'                          effectType = "continuous")
+#' \code{\link{qvalue}}
 #'
-#' # compute the probabilities of rank for 1 to 100 tests
+#' @return \code{prob} probability of the rank of a test
+#' @examples
+#' # compute the probability of the rank of a test being third if all tests are
+#' # from the true null
+#' prob <- prob_rank_givenEffect(k = 3, et = 0, ey = 0, nrep = 10000,
+#'                                       m0 = 50, m1 = 50)
+#'
+#' # compute the probabilities of the ranks of a test being rank 1 to 100 if the
+#' # targeted test effect is 2 and the overall mean filter effect is 1.
 #' ranks <- 1:100
-#' prob <- sapply(ranks, prob_rank_givenEffect_approx, et=2, ey=2, nrep=10000,
-#'                      m0=50, m1=50, effectType = "binary")
+#' prob <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
+#'                               m0 = 50, m1 = 50)
 #'
 #' # plot
-#' plot(ranks, prob)
-#'
+#' plot(ranks,prob)
 #===============================================================================
 # function to compute p(rank=k|filterEffect=ey) by normal approximation
 # we used only uniform effects for continuous case.
 
 # Input:-----
-# k = rank of the tests
-# et = actual data test effect for importance sampling
-# ey = filter test efffect from external information
+# k rank of a test
+# et effect of the targeted test for importance sampling
+# ey mean filter efffect from external information
 # nrep = number of replications for importance sampling
 # m0 = number of true null hypothesis
 # m1 = number of true alternative hypothesis

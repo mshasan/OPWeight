@@ -4,18 +4,19 @@
 \alias{weight_continuous}
 \title{Weight for the continuous effect sizes}
 \usage{
-weight_continuous(alpha, et, m, tail = 2L, delInterval = 1e-04, prob)
+weight_continuous(alpha, et, m, tail = 1L, delInterval = 1e-04, prob)
 }
 \arguments{
-\item{alpha}{significance level of the hypotheis test}
+\item{alpha}{significance level of the hypothesis test}
 
-\item{et}{mean effect size from the actual data (test effect)}
+\item{et}{mean effect size of the test statistics}
 
 \item{m}{totoal number of hypothesis test}
 
-\item{tail}{one-tailed or two-tailed hypothesis test. default is two-tailed test}
+\item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test}
 
-\item{delInterval}{interval between the delta values of a sequence}
+\item{delInterval}{interval between the \code{delta} values of a sequence. Note that,
+\code{delta} is a LaGrange multiplier, necessary to normalize the weight}
 
 \item{prob}{probability of the rank given the effect size}
 }
@@ -23,34 +24,37 @@ weight_continuous(alpha, et, m, tail = 2L, delInterval = 1e-04, prob)
 \code{weight} normalized weight of the tests for the continuous case
 }
 \description{
-Compute weight from the proability of rank given the effect size
+Compute weight from the probability of the rank given the effect size
 for the continuous effect size
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: \epsilon_i > 0,}
 then \code{et} and \code{ey} should be mean value of the test and filter
-effect sizes. This is called hypothesis testing for the continuous effect
-sizes.
+effect sizes, respectively. This is called hypothesis testing for the continuous
+effect sizes.
 }
 \examples{
-# compute the probabilities of rank for 1 to 100 tests
+
+# compute the probabilities of the ranks of a test being rank 1 to 100 if the
+# targeted test effect is 2 and the overall mean filter effect is 1.
 ranks <- 1:100
-prob2 <- sapply(ranks,prob_rank_givenEffect,et=1,ey=1,nrep=10000,m0=50,m1=50)
+prob2 <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
+                              m0 = 50, m1 = 50)
 
 # plot the prooabbility
-plot(ranks,prob2)
+plot(ranks, prob2)
 
 # compute weight for the continuous case
-weight_cont <- weight_continuous(alpha=.05,et=1,m=100,tail=2,delInterval=.0001
-,prob=prob2)
+weight_cont <- weight_continuous(alpha = .05, et = 1, m = 100, tail = 1,
+                            delInterval = .0001, prob = prob2)
 
 # plot the weight
-plot(ranks,weight_cont)
+plot(ranks, weight_cont)
 
 }
 \seealso{
 \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
 }
 \author{
-Mohamad S. Hasan, mshasan@uga.edu
+Mohamad S. Hasan and Paul Schliekelman
 }

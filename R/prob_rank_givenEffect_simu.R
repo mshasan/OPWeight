@@ -1,35 +1,42 @@
-#' @title Probbaility of rank of test given the effect size by simulations
+#' @title Probability of rank of test given effect size by simulations
 #'
-#' @description A simulation approach to comnpute the probbaility of rank of a
+#' @description A simulation approach to comnpute the probability of rank of a
 #' test being higher than any other test given the effect size from the external
 #' information.
 #' @param s number of samples of test statistics composed of null and alternative
 #'  tests
 #' @param ey filter test efffect from the external information
-#' @param e.one vary one test effect across all tests
+#' @param e.one one test effect that will vary across all tests
 #' @param m0 number of true null hypothesis
 #' @param m1 number of true alternative hypothesis
-#' @param effectType type of effect size c("binary","continuous")
+#' @param effectType type of effect sizes, c("binary","continuous")
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
-#' then \code{et}  and \code{ey} should be mean of the test and filter effect sizes,
-#' respectively. This is called hypothesis testing for the continuous effect sizes.
+#' then \code{ey} should be mean of the filter effect sizes,
+#' This is called hypothesis testing for the continuous effect sizes.\cr
+#'
 #' If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
-#' then \code{et} and \code{ey} should be median or any discrete value of the
-#' test and filter effect sizes. This is called hypothesis testing for the Binary
+#' then \code{ey} should be median or any discrete value of the
+#' filter effect sizes. This is called hypothesis testing for the Binary
 #' effect sizes.\cr
+#'
 #' This is a simulation approach to compute the probability of the rank,
-#' P(rank|effect=Ey) in order to verify the actual P(rank|effect=Ey).
-#' Suppose, first vector, x0, is from null and second
-#' vector, x1, is from the alternative model. Threfore we would expect first
-#' observation's rank is greater than m0, and (m0+1)th observation's rank is less
-#' than or equal to m0. However, this is not always true, especially when the
-#' effect size is low, but the above scenerio become obvious as the the effect
-#' size increases.
-#' @author Mohamad S. Hasan, mshasan@uga.edu
+#' P(rank | effect = ey) to verify the actual P(rank | effect = ey).
+#' Suppose, we have a vector of m = m1+m0 observations, where the first m1
+#' observations are
+#' from the true alternative and second m0 are from the true null models. If we
+#' pick two tests one from the first position and the other from the (m0+1)-th position,
+#' then we would expect that the first observation's rank is greater than m0,
+#' and (m1+1)-th observation's rank is less than or equal to m1.
+#' However, this is not always true, especially when the effect size of the test
+#' statistics is low, but the above scenerio become obvious as the the effect
+#' size increases. \code{m1} and \code{m0} can be estimated using \code{qvalue} from
+#' a bioconductor package \code{qvalue}.
+#'
+#' @author Mohamad S. Hasan and Paul Schliekelman
 #' @export
 #' @import stats
-#' @seealso \code{\link{runif}} \code{\link{rnorm}}
+#' @seealso \code{\link{runif}} \code{\link{rnorm}} \code{\link{qvalue}}
 #' @return \code{r0} rank of the null test statistic\cr
 #'         \code{r1} rank of the alternative test statistic
 #' @examples
@@ -41,17 +48,17 @@
 #'
 #' # compute rank of the tests
 #' rank <- sapply(1:sampleSize, prob_rank_givenEffect_simu, ey = 1, e.one = 1,
-#'                           m0=m0, m1=m1, effectType = "continuous")
+#'                           m0 = m0, m1 = m1, effectType = "continuous")
 #'
 #' # rank may generate missing valuse because of the large effcet size,
-#' # therefore, to make a matplot equal vectors size are needed. This procedure
-#' # will replace the missing value to make equal sized vector
-#' # probability of rank of a null test
+#' # therefore, to make a matplot one needs vector of equal size. This procedure
+#' # will replace the missing value to make the equal sized vectors
+#' # probability of the rank of a null test
 #' prob0 <- rep(NA, m)
 #' prob0_x <- tapply(rank[1,], rank[1,], length)/sampleSize
 #' prob0[as.numeric(names(prob0_x))] <- as.vector(prob0_x)
 #'
-#' # probability of rank of an alternative test
+#' # probability of the rank of an alternative test
 #' prob1 <- rep(NA, m)
 #' prob1_x <- tapply(rank[2,], rank[2,], length)/sampleSize
 #' prob1[as.numeric(names(prob1_x))] <- as.vector(prob1_x)
@@ -66,7 +73,7 @@
 # Input:-----
 # s = number samples of test statistics composed of null and alternative tests
 # ey = filter test efffect from the external information
-# e.one vary one test effect across all tests
+# e.one one test effect that will vary across all tests
 # m0 = number of true null hypothesis
 # m1 = number of true alternative hypothesis
 # effectType = type of effect size c("binary","continuous")

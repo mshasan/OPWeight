@@ -26,15 +26,17 @@ Imports:
     slam,
     tibble
 Suggests:
-    ggplot2,
-    scales,
-    DESeq2,
     airway,
-    Matrix,
     BiocStyle,
+    cowplot,
+    DESeq2,
+    devtools,
+    ggplot2,
+    gridExtra,
     knitr,
+    Matrix,
     rmarkdown,
-    devtools
+    scales
 VignetteBuilder: knitr
 biocViews:
     MultipleComparison,

@@ -2,17 +2,17 @@
 % Please edit documentation in R/prob_rank_givenEffect_approx.R
 \name{prob_rank_givenEffect_approx}
 \alias{prob_rank_givenEffect_approx}
-\title{Probbaility of rank of test given effect size by normal approximation}
+\title{Probability of rank of test given effect size by normal approximation}
 \usage{
 prob_rank_givenEffect_approx(k, et, ey, nrep = 10000, m0, m1,
   effectType = c("binary", "continuous"))
 }
 \arguments{
-\item{k}{rank of the tests}
+\item{k}{rank of a test}
 
-\item{et}{actual data test effect for importance sampling}
+\item{et}{effect of the targeted test for importance sampling}
 
-\item{ey}{filter test efffect from external information}
+\item{ey}{mean/median filter efffect from external information}
 
 \item{nrep}{number of replications for importance sampling}
 
@@ -20,42 +20,48 @@ prob_rank_givenEffect_approx(k, et, ey, nrep = 10000, m0, m1,
 
 \item{m1}{number of true alternative hypothesis}
 
-\item{effectType}{type of effect size c("binary","continuous")}
+\item{effectType}{type of effect sizes, c("binary","continuous")}
 }
 \value{
-\code{prob} probability of the rank of the test
+\code{prob} probability of the rank of a test
 }
 \description{
-A normal approximation to comnpute the probbaility of rank of a
+A normal approximation to comnpute the probability of rank of a
 test being higher than any other test given the effect size from external
 information.
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
-then \code{et}  and \code{ey} should be mean of the test and filter effect sizes,
-respectively. This is called hypothesis testing for the continuous effect sizes.
+then \code{ey} should be mean of the filter effect sizes,
+This is called hypothesis testing for the continuous effect sizes.\cr
+
 If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
-then \code{et} and \code{ey} should be median or any discrete value of the
-test and filter effect sizes. This is called hypothesis testing for the Binary
-effect sizes.
+then \code{ey} should be median or any discrete value of the
+filter effect sizes. This is called hypothesis testing for the Binary
+effect sizes.\cr
+
+\code{m1} and \code{m0} can be estimated using \code{qvalue} from
+a bioconductor package \code{qvalue}.
 }
 \examples{
-# compute the probability of rank for the third test
-prob <- prob_rank_givenEffect_approx(k=3, et=0, ey=0, nrep=10000, m0=50, m1=50,
-                         effectType = "continuous")
+# compute the probability of the rank of a test being third if all tests are
+# from the true null
+prob <- prob_rank_givenEffect(k = 3, et = 0, ey = 0, nrep = 10000,
+                                      m0 = 50, m1 = 50)
 
-# compute the probabilities of rank for 1 to 100 tests
+# compute the probabilities of the ranks of a test being rank 1 to 100 if the
+# targeted test effect is 2 and the overall mean filter effect is 1.
 ranks <- 1:100
-prob <- sapply(ranks, prob_rank_givenEffect_approx, et=2, ey=2, nrep=10000,
-                     m0=50, m1=50, effectType = "binary")
+prob <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
+                              m0 = 50, m1 = 50)
 
 # plot
-plot(ranks, prob)
-
+plot(ranks,prob)
 }
 \seealso{
 \code{\link{dnorm}} \code{\link{pnorm}} \code{\link{rnorm}}
+\code{\link{qvalue}}
 }
 \author{
-Mohamad S. Hasan, mshasan@uga.edu
+Mohamad S. Hasan and Paul Schliekelman
 }

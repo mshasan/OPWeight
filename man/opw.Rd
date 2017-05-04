@@ -2,7 +2,7 @@
 % Please edit documentation in R/opw.R
 \name{opw}
 \alias{opw}
-\title{Perform Optimal pvalue Weighting}
+\title{Perform Optimal Pvalue Weighting}
 \usage{
 opw(pvalue, filter, test = NULL, ranksProb = NULL,
   mean_filterEffect = NULL, mean_testEffect = NULL,
@@ -24,20 +24,20 @@ opw(pvalue, filter, test = NULL, ranksProb = NULL,
 
 \item{effectType}{type of effect sizes; c("continuous", "binary")}
 
-\item{alpha}{significance level of the hypotheis test}
+\item{alpha}{significance level of the hypothesis test}
 
 \item{nrep}{number of replications for importance sampling, default value is 10,000,
 can be increased to obtain smoother probability curves}
 
 \item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test.
-For the two-tailed test, either \code{mean_testEffect} or \code{test} statistics
-must need to be provided}
+For the two-tailed test, either \code{test} or \code{ranksProb} or \code{mean_testEffect}
+must needs to be provided}
 
 \item{delInterval}{interval between the \code{delta} values of a sequence. Note that,
-\code{delta} is a lagrange multiplier, necessary to normalize the weight}
+\code{delta} is a LaGrange multiplier, necessary to normalize the weight}
 
 \item{method}{type of methods is used to obtain the results; c("BH", "BON"),
-Benjemini-Hochburg or Bonferroni}
+Benjemini-Hochberg or Bonferroni}
 
 \item{...}{Arguments passed to internal functions}
 }
@@ -57,10 +57,10 @@ p(rank | ey = mean_filterEffect)
 filter statistics
 }
 \description{
-A function to perform the weighted pvalue multiple hypothesis test.
+A function to perform weighted pvalue multiple hypothesis test.
 This function compute the probabilities of the tests' ranks, and consequently
-the weights, then provides the number of rejected nyll hypothesis and the list of
-the rejected pvlaues as well as the corresponing filter statistics.
+the weights, then provides the number of rejected null hypothesis and the list of
+the rejected pvalues as well as the corresponing filter statistics.
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
@@ -73,16 +73,16 @@ then \code{mean_testEffect} and \code{mean_filterEffect} should be median or
 any discrete value of the test and filter effect sizes. This is called hypothesis
 testing for the Binary effect sizes, where \code{epsilon} refers to a fixed value.\cr
 
-Internally, the function comute the \code{rankProb} and consequently the weights,
-then uses the pvalues to make conclusion about hypotheses. Therefore, if
+Internally, the function compute the \code{rankProb} and consequently the weights,
+then uses the pvalues to make conclusions about hypotheses. Therefore, if
 \code{ranksProb} is given then \code{test}, \code{mean_filterEffect}
-and \code{mean_testEffect} are redundant, should not be provided to the funciton.
+and \code{mean_testEffect} are redundant, and should not be provided to the funciton.
 Although \code{ranksProb} is not required to the function, One can compute
 \code{ranksProb} by using the function \code{\link{prob_rank_givenEffect}}.\cr
 
 The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 from a simple linear regression with box-cox transformation between the test
-and filter statistics, where filter is regress on the test statistics.
+and filter statistics, where the filters are regressed on the test statistics.
 Then the estimated \code{mean_filterEffect} and
 \code{mean_testEffect} are used to obtian the \code{ranksProb} and the weights.
 Thus, in order to apply the function properly, it is crucial to understand the
@@ -98,7 +98,7 @@ If \code{mean_filterEffect} and \code{mean_testEffect} are provided then the
 test statistics are not necessary at all. However, if one of the mean effects
 are not given, then the missing mean effect will be computed internally.
 In addition, for the the two-tailed test, one must need to provide either \code{test}
-or \code{mean_filterEffect}.
+or \code{ranksProb} or \code{mean_filterEffect}.
 }
 \examples{
 m = 1000
@@ -133,8 +133,8 @@ results4 <- opw(pvalue = pvals, filter = filters, ranksProb = probs,
 }
 \seealso{
 \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
-\code{\link{weight_binary}} \code{\link{qvalue}}
+\code{\link{weight_continuous}} \code{\link{qvalue}}
 }
 \author{
-Mohamad S. Hasan, mshasan@uga.edu
+Mohamad S. Hasan and Paul Schliekelman
 }

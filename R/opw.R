@@ -1,9 +1,9 @@
-#' @title Perform Optimal pvalue Weighting
+#' @title Perform Optimal Pvalue Weighting
 #'
-#' @description A function to perform the weighted pvalue multiple hypothesis test.
+#' @description A function to perform weighted pvalue multiple hypothesis test.
 #' This function compute the probabilities of the tests' ranks, and consequently
-#' the weights, then provides the number of rejected nyll hypothesis and the list of
-#' the rejected pvlaues as well as the corresponing filter statistics.
+#' the weights, then provides the number of rejected null hypothesis and the list of
+#' the rejected pvalues as well as the corresponing filter statistics.
 #'
 #' @param  pvalue vector of pvalues of the test statistics
 #' @param filter vector of filter statistics
@@ -12,16 +12,16 @@
 #' @param mean_filterEffect mean filter effect of the true alternatives
 #' @param mean_testEffect mean test effect of the true alterantives
 #' @param effectType type of effect sizes; c("continuous", "binary")
-#' @param alpha significance level of the hypotheis test
+#' @param alpha significance level of the hypothesis test
 #' @param nrep number of replications for importance sampling, default value is 10,000,
 #' can be increased to obtain smoother probability curves
 #' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test.
-#' For the two-tailed test, either \code{mean_testEffect} or \code{test} statistics
-#' must need to be provided
+#' For the two-tailed test, either \code{test} or \code{ranksProb} or \code{mean_testEffect}
+#' must needs to be provided
 #' @param delInterval interval between the \code{delta} values of a sequence. Note that,
-#' \code{delta} is a lagrange multiplier, necessary to normalize the weight
+#' \code{delta} is a LaGrange multiplier, necessary to normalize the weight
 #' @param method type of methods is used to obtain the results; c("BH", "BON"),
-#' Benjemini-Hochburg or Bonferroni
+#' Benjemini-Hochberg or Bonferroni
 #' @param ... Arguments passed to internal functions
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
@@ -34,16 +34,16 @@
 #' any discrete value of the test and filter effect sizes. This is called hypothesis
 #' testing for the Binary effect sizes, where \code{epsilon} refers to a fixed value.\cr
 #'
-#' Internally, the function comute the \code{rankProb} and consequently the weights,
-#' then uses the pvalues to make conclusion about hypotheses. Therefore, if
+#' Internally, the function compute the \code{rankProb} and consequently the weights,
+#' then uses the pvalues to make conclusions about hypotheses. Therefore, if
 #' \code{ranksProb} is given then \code{test}, \code{mean_filterEffect}
-#' and \code{mean_testEffect} are redundant, should not be provided to the funciton.
+#' and \code{mean_testEffect} are redundant, and should not be provided to the funciton.
 #' Although \code{ranksProb} is not required to the function, One can compute
 #' \code{ranksProb} by using the function \code{\link{prob_rank_givenEffect}}.\cr
 #'
 #' The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 #' from a simple linear regression with box-cox transformation between the test
-#' and filter statistics, where filter is regress on the test statistics.
+#' and filter statistics, where the filters are regressed on the test statistics.
 #' Then the estimated \code{mean_filterEffect} and
 #' \code{mean_testEffect} are used to obtian the \code{ranksProb} and the weights.
 #' Thus, in order to apply the function properly, it is crucial to understand the
@@ -59,9 +59,9 @@
 #' test statistics are not necessary at all. However, if one of the mean effects
 #' are not given, then the missing mean effect will be computed internally.
 #' In addition, for the the two-tailed test, one must need to provide either \code{test}
-#' or \code{mean_filterEffect}.
+#' or \code{ranksProb} or \code{mean_filterEffect}.
 #'
-#' @author Mohamad S. Hasan, mshasan@uga.edu
+#' @author Mohamad S. Hasan and Paul Schliekelman
 #'
 #' @export
 #'
@@ -71,7 +71,7 @@
 #' @import qvalue qvalue
 #'
 #' @seealso \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
-#' \code{\link{weight_binary}} \code{\link{qvalue}}
+#' \code{\link{weight_continuous}} \code{\link{qvalue}}
 #'
 #'
 #' @return \code{totalTests} total number of hypothesis tests evaluated
@@ -201,9 +201,13 @@ opw <- function(pvalue, filter, test = NULL, ranksProb = NULL, mean_filterEffect
         mean_filterEffect <- if(!is.null(mean_filterEffect)){mean_filterEffect
         } else {
             bc <- boxcox(filter ~ test)
-            trans <- bc$x[which.max(bc$y)]
-            model <- lm(filter^trans ~ test)
-            model$coef[[1]] + model$coef[[2]]*mean_testEffect
+            lambda <- bc$x[which.max(bc$y)]
+
+            if(lambda == 0){lm(log(filter + .0001) ~ test)
+            } else {
+                model <- lm(filter^lambda ~ test)
+            }
+              model$coef[[1]] + model$coef[[2]]*mean_testEffect
         }
 
         if(!is.null(ranksProb)){prob <- ranksProb
