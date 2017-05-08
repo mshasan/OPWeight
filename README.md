@@ -17,13 +17,5 @@ You can install the package as follows:
 
 ```{r}
 library("devtools")
-
-# Bioconductor prerequisites
-source("http://bioconductor.org/biocLite.R")
-biocLite(c("genefilter","DESeq2","qvalue","Biobase",
-            "BiocParallel","airway","pasilla", "BiocStyle"))
-    
-# install OPWeight
-install_github("vladchimescu/lpsymphony", subdir="lpsymphony")
 install_github("mshasan/OPWeight")
 ```
