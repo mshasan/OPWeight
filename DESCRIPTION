@@ -15,15 +15,10 @@ Depends:
 License: Artistic-2.0
 LazyData: true
 Imports:
-    BiocGenerics,
-    fdrtool,
     graphics,
-    lpsymphony,
     MASS,
-    methods,
     qvalue,
     stats, 
-    slam,
     tibble
 Suggests:
     airway,

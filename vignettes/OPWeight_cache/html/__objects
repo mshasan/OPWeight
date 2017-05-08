@@ -1,9 +1,9 @@
-loadlibs	de_res_air
+loadlibs	dds	de_res_air	airway
 colnames_de_res_air	
 loadihw	opw_results
 unnamed-chunk-1	
 unnamed-chunk-2	
 unnamed-chunk-3	
 unnamed-chunk-4	dat	m	p_prob	p_weight	probs	ranks	weights
-unnamed-chunk-5	Data	barlines	hist_filter	hist_pval	hist_test	p_ecdf	pval_filter	test_filter
-unnamed-chunk-6	bc	m	m0	m1	mean_filterEffect	mean_testEffect	model	null	test_effect	trans
+unnamed-chunk-5	Data	barlines	hist_filter	hist_pval	p_ecdf	pval_filter
+unnamed-chunk-6	bc	lambda	m	m0	m1	mean_filterEffect	mean_testEffect	model	null	test_effect
