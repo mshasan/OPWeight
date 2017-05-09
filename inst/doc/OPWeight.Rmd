@@ -1,0 +1,218 @@
+---
+title: "Introduction to OPWeight"
+author: "Mohamad S. Hasan and Paul Schliekelman"
+date: "`r doc_date()`"
+package: "`r pkg_ver('OPWeight')`"
+output: BiocStyle::html_document
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{"Introduction to OPWeight"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
+```
+# Introduction
+High throughput data is very common in modern science. The main property of these data is high-dimensionality; that is, the number of features is larger than the number of observations. There are many ways to study this kind of data, and multiple hypothesis testing is one of them. In a multiple hypothesis test, generally a list of pvalues $(p_i)$ are calculated, one for each hypothesis $(H_i)$ corresponding to one feature; the pvalues are then compared with one or more predefined fixed or random thresholds to obtain the number of significant features. The key goal is to control the Family Wise Error Rate ($FWER$) or False Discovery Rate ($FDR$) while maximizing the power of the tests. 
+
+Although multiple hypotheses provide platform to test many features simultaneously, it often requires high compensation for doing so [@stephens2016false]. To overcome from this shortcoming, [@benjamini1997false] shows a way of using the rank of the pvalues frequently termed as ***adjusted*** pvalues. However, this method solely depends on the pvalues and, therefore, provides only sub optimal power of the tests. An alternative approach is pvalue weighting in which external information is used in terms of weight and the actual pvalue is redefined by incorporating the weight, which is usually accomplished dividing the original pvalues by the corresponding weights and creating new pvalues called weighted pvalues, i.e., $p_i^{w_i} = \frac{p_i}{w_i}; i = 1, ...., m$, where $p_i^{w_i}$ and $w_i$ refers to the weighted pvalue and the corresponding weight. This external information frequently referred as the filter statistics or the covariates $(y_i)$. The requirements of the method are that the covariates are assumed to be independent under the null hypothesis but informative for the power [@bourgon2010independent]. In addition, the weights must be non-negative, and the mean of the weights must be equal to $1$.
+
+Generally, covariates provide different prior probabilities of the null hypotheses being true; therefore, a judiciously chosen covariate can significantly improve the power of the test while maintaining the error rate below the threshold. Such covariates are frequently available from various studies and data sets [@ignatiadis2016natmeth]. In this vignette, we discussed an application of a newly proposed method of the pvalue weighting called ***Optimal Pvalue Weighting (OPW)***, which will soon appear in the journal. In the article, we showed how to compute an optimal weight of the pvalues without estimating the effect sizes of the tests. We showed that the weights can be computed by applying a probabilistic relationship of the ranking of the tests and the effect sizes. In regards to $OPW$, we developed an $R$ package named `r Biocpkg("OPWeight")`, and we will discuss the application procedures of the functions of the package. To apply the function, the essential inputs are:
+
+i) a vector of pvalues
+ii) a vector of filter statistics, where each value corresponds to a pvalue
+
+and the auxiliary inputs are
+
+i) a vector of test statistics
+ii) the probabilities of the ranks
+iii) mean of the filter and/or test effects
+iv) a significance level of $\alpha$ at which $FWER$ or $FDR$ will be controlled
+
+The proposed $OPW$ method uses covariates to compute the probability of the ranks of the test statistics being higher than any other tests, $p(r_i \mid \varepsilon_i)$, then compute the weights from the probability corresponding to the pvalues. As an example, we will discuss an RNA-seq differential gene expression data called `r Biocpkg("airway")` from the $R$ library `r Biocpkg("airway")`. This data set is also used in the $IHW$ package vignettes [@ignatiadis2016natmeth].  
+
+
+# Airway RNA-seq data example
+We fist preprocess the `r Biocpkg("airway")` RNA-Seq data set using `r Biocpkg("DESeq2")` [@love2014moderated] to obtain the pvalues, test statistics, and the covariates (filter statistics).
+
+```{r loadlibs, message=FALSE, warning=FALSE}
+library("ggplot2")
+library("airway")
+library("DESeq2")
+library(gridExtra)
+library(cowplot)
+library(tibble)
+library(qvalue)
+library(MASS)
+
+data("airway", package = "airway")
+dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
+dds <- DESeq(dds)
+de_res_air <- as.data.frame(results(dds))
+```
+
+The output is a `r class(de_res_air)` object containing the following columns for each gene, where each gene corresponds to a hypothesis test:
+
+```{r colnames_de_res_air}
+colnames(de_res_air)
+dim(de_res_air)
+```
+
+From the above columns, we will consider `baseMean` as the covariate. In the `r Biocpkg("DESeq2")` paper, it has argued that the covariate `baseMean` and the test statistics `stat` are approximately independent under the null hypothesis, which fulfills the requirements for the `baseMean` to be the filter statistics. 
+
+First we will load the proposed package `r Biocpkg("OPWeight")` and then show the steps to conduct $OPW$ tests:
+
+```{r loadihw, message=FALSE, warning=FALSE}
+library("OPWeight")
+opw_results <- opw(pvalue = de_res_air$pvalue, filter = de_res_air $baseMean, 
+                  test = de_res_air$stat, alpha = .05, tail = 2, 
+                  effectType = "continuous", method = "BH")
+```
+
+<p style = "text-align: center;"> 
+**Figure 1:** The above plot shows the estimated $\lambda$ of the box-cox transformation and the corresponding $log-likelihood.$
+</p>
+
+
+The executed function $opw()$ returns a list of objects:
+
+```{r}
+names(opw_results)
+```
+
+For example, the estimated proportion of the true null hypothesis:
+
+```{r}
+opw_results$propNulls
+```
+
+The number of rejected null hypothesis: 
+
+```{r}
+opw_results$rejections
+```
+
+The plots of the probabilities of the ranks of the test statistics, $P(r_i \mid \varepsilon_i)$, and the corresponding weights, $w_i$:
+
+```{r}
+m = opw_results$totalTests
+ranks = 1:m
+probs = opw_results$ranksProb
+weights = opw_results$weight
+dat = data.frame(ranks, probs, weights)
+p_prob = ggplot(dat, aes(x = ranks, y = probs)) + geom_point(size = .5, col="firebrick4") + 
+    labs(y = "p(rank | effect)")
+p_weight = ggplot(dat, aes(x = ranks, y = weights)) + geom_point(size = .5, col="firebrick4")
+grid.arrange(p_prob, p_weight, ncol = 2)
+```
+
+<p style = "text-align: center;"> 
+**Figure 2:** Probabilities and weights versus ranks
+</p>
+
+
+If one wants to test $H_0: \varepsilon_i=0$ vs. $H_0: \varepsilon_i > 0$, i.e., the effect sizes follow continuous distribution, then one should use `effectType = "continuous"`. Similarly, if one wants to test $H_0: \varepsilon_i=0$ vs. $H_0: \varepsilon_i=\varepsilon$, i.e., effect sizes are binary; $0$ under the null model and a fixed value $\varepsilon$ under the alternative model, one should use `effectType = "binary"`. $opw()$ function can provide results based on $FDR$ or $FWER$, and the default method is Benjamini-Hochberg [@benjamini1997false] $FDR$ method.
+
+Other parameters that we did not use in the $opw()$ function can be discussed here. Internally, the function compute the `rankProb` and consequently the weights, then uses the pvalues to make conclusions about hypotheses. Therefore, if `ranksProb` is given then `test`, `mean_filterEffect` and `mean_testEffect` are redundant, and should not be provided to the funciton. Although `ranksProb` is not required to the function, One can compute `ranksProb` by using the function ***prob_rank_givenEffect***.
+
+The function $opw()$ internally compute `mean_filterEffect` and `mean_testEffect` from a simple linear regression with *box-cox* transformation between the test and filter statistics, where the filters are regressed on the test statistics. Then the estimated `mean_filterEffect` and `mean_testEffect` are used to obtian the `ranksProb` and the weights. Thus, in order to apply the function properly, it is crucial to understand the uses of the parameters `test`, `mean_filterEffect` and `mean_testEffect`.
+
+If the test statistics are provided, `mean_filterEffect` and
+`mean_testEffect` are not provided then the supplied test statistics will
+be used to compute the relationship between the filter statistics and the
+test statistics. If none of them are given then the `pvalue` will be used to
+compute the test statistics, and therefore these test statistics will be considered as the right-tailed test statistics. If `mean_filterEffect` and `mean_testEffect` are provided then the test statistics are not necessary at all. However, if one of the mean effects are not given, then the missing mean effect will be computed internally. In addition, for the the two-tailed test, one must need to provide either `test` or `ranksProb` or `mean_filterEffect`. 
+
+There are many ways to obtain the mean of the test effects, `mean_testEffect`, and the corresponding value of the filter effects, `mean_filterEffect`; however, in the proposed $R$ function $opw()$, we used a simple linear regression with *box-cox* transformation. Sometimes the *box-cox* transformation may not be the optimal choice or one wants to use a different model to obtain the relationship. In that situation, one can acquire the relationship between the filter and test statistics externally then provide `ranksProb` or `mean_filterEffect` and `mean_testEffect` to perform the proposed optimal pvalue weighting. In the following section, we will show the details analysis procedure.
+
+# Data analysis
+
+Before applying the function let's perform a pre-screening analysis of the data set. Consider the above data set. First make some plots based on the filter statistics, test statistics, and the pvalues.
+
+```{r}
+Data <- tibble(test=de_res_air$stat, pval=de_res_air$pvalue, filter=de_res_air$baseMean)
+
+barlines <- "#1F3552"
+
+hist_pval <- ggplot(Data, aes(x = Data$pval)) +
+        geom_histogram(colour = barlines, fill = "#4281AE")+
+		labs(x = "pvalues")
+
+hist_filter <- ggplot(Data, aes(x = Data$filter)) +
+        geom_histogram( colour = barlines, fill = "#4274AE") +
+		labs(x = "filter statistics")
+        
+pval_filter <- ggplot(Data, aes(x = rank(-Data$filter), y = -log10(pval))) +
+		geom_point()+
+		labs(x = "ranks of filters", y = "-log(pvalue)")
+		
+p_ecdf <- ggplot(Data, aes(x = pval)) +
+			stat_ecdf(geom = "step")+
+			labs(x = "pvalues", title="empirical cumulative distribution")+
+			theme(plot.title = element_text(size = rel(.7)))
+
+grid.arrange(hist_pval, hist_filter, pval_filter, p_ecdf, 
+		ncol = 2, heights = c(7, 7), top = "Airway: data summary")
+
+```
+**Figure 3:** The first row shows the distribution of the filter statistics and the pvalues, and the second row shows the relationship between the pvalues and the rank of the filter statistics, and the empirical cumulative distribution of the pvalues, respectively.
+
+
+From the pre-analysis plots, we see the distribution of the filter statistics is rightly skewed; therefore, to perform a linear regression the filter statistics need to be transformed. In $opw()$ function, we used *box-cox* transformation. However, one can perform another transformation, such as $log(filter)$, and fit a simple linear regression model, or apply other methods to obtain the relationship. For example, generalized linear model. Although the transformed distribution may not be still suitable, this may not be a severe problem as long as the model fit the center of the data well, because the proposed method only requires the center of the distribution. 
+
+We also observe from the plot that there is a weak relationship between the test statistics and the filter statistics; however, the ranked-filter statistics shows a potential relationship with the pvalues, i.e., low pvalues are enriched at the higher filter statistics. This relationship might be informative for the pvalue-weighting because we are more interested in the ranking of the filter statistics. Enrichment of the low pvalues at higher filter statistics also indicates that the filter statistics is correlated with the power under the alternative model. Furthermore, the bimodal distribution of the pvalues indicates two-tailed test criteria are necessary because pvalues close to $1$ be the cases that are significant in the opposite direction. We also observed the empirical cumulative distribution of the pvalues. The empirical cumulative distribution shows that the curve is almost linear for the high pvalues, which reveals the lesser importance of the higher pvalues, and the size of the low pvalues is very small.
+
+Now we first fit a linear regression with *box-cox* transformation then with *log-transformation*, and obtain the estimated `mean_filterEffect` and `mean_testEffect` in the following:
+
+```{r}
+# estimate the true null and alternative test sizes------
+m = length(Data$pval); m
+null = qvalue(Data$pval, pi0.method="bootstrap")$pi0; null
+m0 = ceiling(null*m); m0
+m1 = m - m0; m1
+
+# fit box-cox regression
+#--------------------------------
+bc <- boxcox(Data$filter ~ Data$test, plotit = FALSE)
+lambda <- bc$x[which.max(bc$y)]; lambda
+model <- lm(Data$filter^lambda ~ Data$test)
+
+# lambda = 0. Therefore, we use log-transformation
+
+model <- lm(log(Data$filter) ~ Data$test)
+
+# etimated test efects of the true altrnatives------------
+test_effect = if(m1 == 0) {0
+} else {sort(abs(Data$test), decreasing = T)[1:m1]}		# two-tailed test
+
+# for the continuous effects etimated mean effects
+mean_testEffect = mean(test_effect, na.rm = T)
+mean_testEffect
+mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
+mean_filterEffect
+
+# for the binary effects estiamted median effects 
+mean_testEffect = median(test_effect, na.rm = T)
+mean_testEffect
+mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
+mean_filterEffect
+```
+The above procedure is being performed by the $opw()$ function internally by default; however, if one wants to try a different approach such as fitting a generalized linear model instead of the *box-cox* transformation, one needs to use a different model to obtain the estimated mean effects.
+
+In order to obtain the mean effects, we compute the predicted value of the filter statistics corresponding to the mean or median of the test statistics. The mean or median value of the test statistics is then used as the estimated `mean_testEffect` and the corresponding predicted value of the filter statistics is used as the estimated `mean_filterEffect`.
+
+# Other functions
+
+In the package `r Biocpkg("OPweight")`, there are other useful functions: ***1) prob_rank_givenEffect, 2) weight_binary, 3) weight_continuous,  4) prob_rank_givenEffect_approx, 5) prob_rank_givenEffect_exact**, and ***6) prob_rank_givenEffect_simu**. First three functions are used inside the main function $opw()$; however, the remaining three functions are provided if anyone wants to see the behavior of the probability of the rank of the test statistic, $p(r_i \mid \varepsilon_i)$. In the original, article we proposed the probability method and showed an exact mathematical formula then verify the formula by simulations. The exact method requires intensive computation; therefore, we proposed an approximation. By applying the later three functions one can easily observe that all the methods perform similarly. However, for a large number of tests the simulation and the exact approach are computationally very slow; therefore, the approximation method is a better option. In fact, we actually need $p(r_i \mid E(\varepsilon_i))$ that is obtained by the function ***prob_rank_givenEffect***. For the details see Hasan and Schliekelman, 2017 and the corresponding supplementry materials.
+
+
+# References
+
+
+
+
+
+
