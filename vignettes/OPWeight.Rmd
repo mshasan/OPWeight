@@ -3,7 +3,8 @@ title: "Introduction to OPWeight"
 author: "Mohamad S. Hasan and Paul Schliekelman"
 date: "`r doc_date()`"
 package: "`r pkg_ver('OPWeight')`"
-output: BiocStyle::html_document
+#output: BiocStyle::pdf_document 
+output: BiocStyle::html_document2
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{"Introduction to OPWeight"}
