@@ -4,7 +4,7 @@
 \alias{opw}
 \title{Perform Optimal Pvalue Weighting}
 \usage{
-opw(pvalue, filter, test = NULL, ranksProb = NULL,
+opw(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FALSE,
   mean_filterEffect = NULL, mean_testEffect = NULL,
   effectType = c("continuous", "binary"), alpha = 0.05, nrep = 10000,
   tail = 1L, delInterval = 1e-04, method = c("BH", "BON"), ...)
@@ -16,7 +16,10 @@ opw(pvalue, filter, test = NULL, ranksProb = NULL,
 
 \item{test}{vector of test statistics}
 
-\item{ranksProb}{the probabilities of the ranks given the mean filter effect}
+\item{prob_givenEffect}{the probabilities of the filters or filters' ranks given
+the mean of the filter effects}
+
+\item{ranks}{determine what type of probabilities \code{prob_givenEffect} is used}
 
 \item{mean_filterEffect}{mean filter effect of the true alternatives}
 
@@ -30,8 +33,8 @@ opw(pvalue, filter, test = NULL, ranksProb = NULL,
 can be increased to obtain smoother probability curves}
 
 \item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test.
-For the two-tailed test, either \code{test} or \code{ranksProb} or \code{mean_testEffect}
-must needs to be provided}
+For the two-tailed test, either \code{test} or \code{prob_givenEffect}
+or \code{mean_testEffect} must needs to be provided}
 
 \item{delInterval}{interval between the \code{delta} values of a sequence. Note that,
 \code{delta} is a LaGrange multiplier, necessary to normalize the weight}
@@ -46,7 +49,7 @@ Benjemini-Hochberg or Bonferroni}
 
 \code{propNulls} estimated propotion of the true null hypothesis
 
-\code{ranksProb} probability of the ranks given the mean filter effect,
+\code{probGivenEffect} probability of the ranks given the mean filter effect,
 p(rank | ey = mean_filterEffect)
 
 \code{weight} normalized weight
@@ -73,18 +76,20 @@ then \code{mean_testEffect} and \code{mean_filterEffect} should be median or
 any discrete value of the test and filter effect sizes. This is called hypothesis
 testing for the Binary effect sizes, where \code{epsilon} refers to a fixed value.\cr
 
-Internally, the function compute the \code{rankProb} and consequently the weights,
-then uses the pvalues to make conclusions about hypotheses. Therefore, if
-\code{ranksProb} is given then \code{test}, \code{mean_filterEffect}
-and \code{mean_testEffect} are redundant, and should not be provided to the funciton.
-Although \code{ranksProb} is not required to the function, One can compute
-\code{ranksProb} by using the function \code{\link{prob_rank_givenEffect}}.\cr
+Internally, \code{opw} function compute the \code{prob_givenEffect} and consequently
+the weights, then uses the pvalues to make conclusions about hypotheses.
+Therefore, if \code{prob_givenEffect} is given then \code{mean_filterEffect}
+and are redundant, and should not be provided to the funciton.
+Although \code{prob_givenEffect} is not required to the function,
+One can compute \code{prob_givenEffect} by using either the function
+\code{\link{prob_rank_givenEffect}} if \code{ranks == TRUE} or
+\code{\link{dnorm}} if \code{ranks == FALSE}.\cr
 
 The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 from a simple linear regression with box-cox transformation between the test
 and filter statistics, where the filters are regressed on the test statistics.
 Then the estimated \code{mean_filterEffect} and
-\code{mean_testEffect} are used to obtian the \code{ranksProb} and the weights.
+\code{mean_testEffect} are used to obtian the \code{prob_givenEffect} and the weights.
 Thus, in order to apply the function properly, it is crucial to understand the
 uses of the parameters \code{test}, \code{mean_filterEffect} and \code{mean_testEffect}.
 If the test statistics are provided, and \code{mean_filterEffect} and
@@ -97,8 +102,8 @@ as the right-tailed test statistics.\cr
 If \code{mean_filterEffect} and \code{mean_testEffect} are provided then the
 test statistics are not necessary at all. However, if one of the mean effects
 are not given, then the missing mean effect will be computed internally.
-In addition, for the the two-tailed test, one must need to provide either \code{test}
-or \code{ranksProb} or \code{mean_filterEffect}.
+In addition, for the the two-tailed test, one must need to provide either
+\code{test} or \code{prob_givenEffect} or \code{mean_testEffect}.
 }
 \examples{
 m = 1000
@@ -108,16 +113,17 @@ H = rbinom(m, size = 1, prob = 0.1)             # hypothesis true or false
 tests = rnorm(m, mean = H * filters)            # Z-score
 pvals = 1 - pnorm(tests)                        # pvalue
 
-results <- opw(pvalue = pvals, filter = filters, effectType = "continuous",
-                        method = "BH")
-results2 <- opw(pvalue = pvals, filter = filters, test = tests,
+results <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
+                     effectType = "continuous", method = "BH")
+results2 <- opw(pvalue = pvals, filter = filters, test = tests, ranks = TRUE,
                effectType = "continuous", tail = 2, method = "BH")
 
 mod <- lm(log(filters) ~ tests)
 et = mean(tests)
 ey = mod$coef[[1]] + mod$coef[[2]]*et
-results3 <- opw(pvalue = pvals, filter = filters, mean_filterEffect = ey,
-               mean_testEffect = et, tail = 2, effectType = "continuous", method = "BH")
+results3 <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
+               mean_filterEffect = ey, mean_testEffect = et, tail = 2,
+               effectType = "continuous", method = "BH")
 
 # compute the probabilities of rank for 1 to 100 tests
 library(qvalue)
@@ -127,13 +133,17 @@ m0 = ceiling(null*m)
 m1 = m - m0
 probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
                                         nrep = 10000, m0 = m0, m1 = m1)
-results4 <- opw(pvalue = pvals, filter = filters, ranksProb = probs,
+results4 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs,
+                     effectType = "continuous", tail = 2, method = "BH")
+
+probs2 <- dnorm(filters, mean = mean(filters), sd = 1)
+results5 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs2,
                      effectType = "continuous", tail = 2, method = "BH")
 
 }
 \seealso{
 \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
-\code{\link{weight_continuous}} \code{\link{qvalue}}
+\code{\link{weight_continuous}} \code{\link{qvalue}} \code{\link{dnorm}}
 }
 \author{
 Mohamad S. Hasan and Paul Schliekelman

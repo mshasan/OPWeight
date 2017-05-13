@@ -5,5 +5,13 @@ unnamed-chunk-1
 unnamed-chunk-2	
 unnamed-chunk-3	
 unnamed-chunk-4	dat	m	p_prob	p_weight	probs	ranks	weights
-unnamed-chunk-5	Data	barlines	hist_filter	hist_pval	p_ecdf	pval_filter
+unnamed-chunk-5	barlines	Data	hist_filter	hist_pval	p_ecdf	pval_filter
 unnamed-chunk-6	bc	lambda	m	m0	m1	mean_filterEffect	mean_testEffect	model	null	test_effect
+loadOPWeight	opw_results
+outputsName	
+nullProp	
+no.OfRejections	
+pronVsWeight	dat	m	p_prob	p_weight	probs	ranks	weights
+sumPlots	Data	barlines	hist_filter	hist_pval	p_ecdf	pval_filter
+dataAnalysis	bc	lambda	m	m0	m1	mean_filterEffect	mean_testEffect	model	null	test_effect
+probVsWeight	dat	m	p_prob	p_weight	probs	ranks	weights

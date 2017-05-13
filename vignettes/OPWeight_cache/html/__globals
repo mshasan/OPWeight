@@ -6,4 +6,12 @@ unnamed-chunk-2	$	opw_results
 unnamed-chunk-3	$	opw_results
 unnamed-chunk-4	$	aes	data.frame	geom_point	ggplot	grid.arrange	labs	opw_results
 unnamed-chunk-5	$	aes	c	de_res_air	element_text	geom_histogram	geom_point	ggplot	grid.arrange	labs	log10	pval	rank	rel	stat_ecdf	theme	tibble
-unnamed-chunk-6	$	==	Data	T	[[	abs	boxcox	ceiling	if	length	lm	mean	median	qvalue	sort	which.max	~
+unnamed-chunk-6	$	[[	~	==	abs	boxcox	ceiling	Data	if	length	lm	mean	median	qvalue	sort	T	which.max
+loadOPWeight	$	de_res_air	library	opw
+outputsName	names	opw_results
+nullProp	$	opw_results
+no.OfRejections	$	opw_results
+pronVsWeight	$	aes	data.frame	geom_point	ggplot	grid.arrange	labs	opw_results
+sumPlots	$	aes	c	de_res_air	element_text	geom_histogram	geom_point	ggplot	grid.arrange	labs	log10	pval	rank	rel	stat_ecdf	theme	tibble
+dataAnalysis	$	==	Data	T	[[	abs	boxcox	ceiling	if	length	lm	mean	median	qvalue	sort	which.max	~
+probVsWeight	$	aes	data.frame	geom_point	ggplot	grid.arrange	labs	opw_results
