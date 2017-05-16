@@ -111,8 +111,8 @@
 #' # compute the probabilities of rank for 1 to 100 tests
 #' library(qvalue)
 #' ranks <- 1:m
-#' null = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
-#' m0 = ceiling(null*m)
+#' nullProp = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
+#' m0 = ceiling(nullProp*m)
 #' m1 = m - m0
 #' probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
 #'                                         nrep = 10000, m0 = m0, m1 = m1)
@@ -144,7 +144,7 @@
 
 # internal parameters:-----
 # m = number of hypothesis test
-# null = proportion of true null hypothesis
+# nullProp = proportion of true null hypothesis
 # m0 =  number of the true null tests
 # m1 = number of the true alternative tests
 # test =  compute test statistics from the pvalues if not given
@@ -174,10 +174,10 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
                 effectType = c("continuous", "binary"), alpha = .05, nrep = 10000,
                 tail = 1L, delInterval = .0001, method = c("BH", "BON"), ... )
     {
-        # compute number of tests------------
+        # compute the number of tests------------
         m = length(pvalue)
-        null = qvalue(p = pvalue, pi0.method = "bootstrap")$pi0
-        m0 = ceiling(null*m)
+        nullProp = qvalue(p = pvalue, pi0.method = "bootstrap")$pi0
+        m0 = ceiling(nullProp*m)
         m1 = m - m0
 
         # determine the side of the tests-------------
@@ -194,7 +194,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
 
         test[which(!is.finite(test))] <- NA
 
-        # estimae the true alterantive test effect sizes----------------
+        # estimate the true alterantive test effect sizes----------------
         if(m1 == 0){test_effect_vec <- 0
         } else {
             if(tail == 1){test_effect_vec <-  sort(test, decreasing = TRUE)[1:m1]
@@ -204,7 +204,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
             }
         }
 
-        # estiamte the mean test effect size-------------
+        # estimate the mean test effect size-------------
         if(!is.null(mean_testEffect)){mean_testEffect <- mean_testEffect
         } else {
             if(effectType == "continuous"){
@@ -214,7 +214,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
             }
         }
 
-        # estiamte lambda from box-cox transformation----------------
+        # estimate lambda from box-cox transformation----------------
         bc <- boxcox(filter ~ test)
         lambda <- bc$x[which.max(bc$y)]
 
@@ -267,7 +267,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         # outputs--------------
         n_rejections = dim(rejections_list)[1]
 
-        return(list(totalTests = m, propNulls = null,
+        return(list(totalTests = m, propNulls = nullProp,
                     probGivenEffect = prob, weight = wgt,
                     rejections = n_rejections, rejections_list = rejections_list))
     }
