@@ -96,14 +96,14 @@ If the test statistics are provided, and \code{mean_filterEffect} and
 \code{mean_testEffect} are not provided then the supplied test statistics will
 be used to compute the relationship between the filter statistics and the
 test statistics. If none of them are given then the \code{pvalue} will be used to
-compute the test statistics, and therefore these test statistics will be considered
-as the right-tailed test statistics.\cr
+compute the test statistics.\cr
 
 If \code{mean_filterEffect} and \code{mean_testEffect} are provided then the
 test statistics are not necessary at all. However, if one of the mean effects
 are not given, then the missing mean effect will be computed internally.
-In addition, for the the two-tailed test, one must need to provide either
-\code{test} or \code{prob_givenEffect} or \code{mean_testEffect}.
+In addition, for the the two-tailed test, it is better to provide either
+\code{test} or \code{prob_givenEffect} or \code{mean_testEffect} to obtain the
+accurate test direction.
 }
 \examples{
 m = 1000
@@ -128,8 +128,8 @@ results3 <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
 # compute the probabilities of rank for 1 to 100 tests
 library(qvalue)
 ranks <- 1:m
-null = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
-m0 = ceiling(null*m)
+nullProp = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
+m0 = ceiling(nullProp*m)
 m1 = m - m0
 probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
                                         nrep = 10000, m0 = m0, m1 = m1)

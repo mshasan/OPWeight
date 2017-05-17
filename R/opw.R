@@ -56,14 +56,14 @@
 #' \code{mean_testEffect} are not provided then the supplied test statistics will
 #' be used to compute the relationship between the filter statistics and the
 #' test statistics. If none of them are given then the \code{pvalue} will be used to
-#' compute the test statistics, and therefore these test statistics will be considered
-#' as the right-tailed test statistics.\cr
+#' compute the test statistics.\cr
 #'
 #' If \code{mean_filterEffect} and \code{mean_testEffect} are provided then the
 #' test statistics are not necessary at all. However, if one of the mean effects
 #' are not given, then the missing mean effect will be computed internally.
-#' In addition, for the the two-tailed test, one must need to provide either
-#' \code{test} or \code{prob_givenEffect} or \code{mean_testEffect}.
+#' In addition, for the the two-tailed test, it is better to provide either
+#' \code{test} or \code{prob_givenEffect} or \code{mean_testEffect} to obtain the
+#' accurate test direction.
 #'
 #' @author Mohamad S. Hasan and Paul Schliekelman
 #'
@@ -186,8 +186,12 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         }
 
         # compute test statistics from the pvalues---------
-        if(is.null(test)) {
-            test <- qnorm(pvalue, lower.tail = FALSE)
+        if(is.null(test)){
+            if(tail == 1){
+                test <- qnorm(pvalue, lower.tail = FALSE)
+            } else{
+                test <- qnorm(pvalue/2, lower.tail = FALSE)
+            }
         } else {
             test <- test
         }
@@ -197,11 +201,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         # estimate the true alterantive test effect sizes----------------
         if(m1 == 0){test_effect_vec <- 0
         } else {
-            if(tail == 1){test_effect_vec <-  sort(test, decreasing = TRUE)[1:m1]
-            } else {test_effect_vec <-  sort(abs(test), decreasing = TRUE)[1:m1]
-                message("for two-tailed test, eihter test or prob_givenEffect or
-                        mean_testEffect must needs to be provided")
-            }
+            test_effect_vec <-  sort(test, decreasing = TRUE)[1:m1]
         }
 
         # estimate the mean test effect size-------------
