@@ -223,7 +223,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         } else {
             if(lambda == 0){model <- lm(log(filter + .0001) ~ test)
             } else {
-                model <- lm(filter^lambda ~ test)
+                model <- lm(filter**lambda ~ test)
             }
             mean_filterEffect <- model$coef[[1]] + model$coef[[2]]*mean_testEffect
         }
@@ -235,7 +235,7 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
                 if(lambda == 0){
                     prob <- dnorm(log(filter + .0001), mean = mean_filterEffect, sd = 1)
                 } else {
-                    prob <- dnorm(filter^lambda, mean = mean_filterEffect, sd = 1)
+                    prob <- dnorm(filter**lambda, mean = mean_filterEffect, sd = 1)
                 }
             } else {
                 prob <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
