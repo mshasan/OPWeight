@@ -48,6 +48,7 @@
 #' The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 #' from a simple linear regression with box-cox transformation between the test
 #' and filter statistics, where the filters are regressed on the test statistics.
+#' Thus, filters need to be positive to apply \code{boxcox} from the \code{R} library \code{MASS}
 #' Then the estimated \code{mean_filterEffect} and
 #' \code{mean_testEffect} are used to obtian the \code{prob_givenEffect} and the weights.
 #' Thus, in order to apply the function properly, it is crucial to understand the
@@ -233,9 +234,9 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         } else {
             if(ranks == FALSE){
                 if(lambda == 0){
-                    prob <- dnorm(log(filter + .0001), mean = mean_filterEffect, sd = 1)
+                    prob <- dnorm(log(filter + .0001), mean = mean_testEffect, sd = 1)
                 } else {
-                    prob <- dnorm(filter**lambda, mean = mean_filterEffect, sd = 1)
+                    prob <- dnorm(filter**lambda, mean = mean_testEffect, sd = 1)
                 }
             } else {
                 prob <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
