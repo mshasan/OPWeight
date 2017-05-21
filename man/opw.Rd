@@ -4,7 +4,7 @@
 \alias{opw}
 \title{Perform Optimal Pvalue Weighting}
 \usage{
-opw(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FALSE,
+opw(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
   mean_filterEffect = NULL, mean_testEffect = NULL,
   effectType = c("continuous", "binary"), alpha = 0.05, nrep = 10000,
   tail = 1L, delInterval = 1e-04, method = c("BH", "BON"), ...)
@@ -13,8 +13,6 @@ opw(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FALSE,
 \item{pvalue}{vector of pvalues of the test statistics}
 
 \item{filter}{vector of filter statistics}
-
-\item{test}{vector of test statistics}
 
 \item{prob_givenEffect}{the probabilities of the filters or filters' ranks given
 the mean of the filter effects}
@@ -32,9 +30,7 @@ the mean of the filter effects}
 \item{nrep}{number of replications for importance sampling, default value is 10,000,
 can be increased to obtain smoother probability curves}
 
-\item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test.
-For the two-tailed test, either \code{test} or \code{prob_givenEffect}
-or \code{mean_testEffect} must needs to be provided}
+\item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test.}
 
 \item{delInterval}{interval between the \code{delta} values of a sequence. Note that,
 \code{delta} is a LaGrange multiplier, necessary to normalize the weight}
@@ -61,7 +57,8 @@ filter statistics
 }
 \description{
 A function to perform weighted pvalue multiple hypothesis test.
-This function compute the probabilities of the tests' ranks, and consequently
+This function compute either the probabilities of the tests' ranks or the
+probabilities of the filters given the effect sizes, and consequently
 the weights, then provides the number of rejected null hypothesis and the list of
 the rejected pvalues as well as the corresponing filter statistics.
 }
@@ -88,22 +85,17 @@ One can compute \code{prob_givenEffect} by using either the function
 The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 from a simple linear regression with box-cox transformation between the test
 and filter statistics, where the filters are regressed on the test statistics.
-Then the estimated \code{mean_filterEffect} and
+Thus, filters need to be positive to apply \code{boxcox} from the \code{R}
+library \code{MASS}. Then the estimated \code{mean_filterEffect} and
 \code{mean_testEffect} are used to obtian the \code{prob_givenEffect} and the weights.
 Thus, in order to apply the function properly, it is crucial to understand the
-uses of the parameters \code{test}, \code{mean_filterEffect} and \code{mean_testEffect}.
-If the test statistics are provided, and \code{mean_filterEffect} and
-\code{mean_testEffect} are not provided then the supplied test statistics will
-be used to compute the relationship between the filter statistics and the
-test statistics. If none of them are given then the \code{pvalue} will be used to
-compute the test statistics.\cr
+uses \code{mean_filterEffect} and \code{mean_testEffect}. If \code{mean_filterEffect} and
+\code{mean_testEffect} are not provided then the test statistics computed from
+the pvalues will be used to compute the relationship between the filter
+statistics and the test statistics.\cr
 
-If \code{mean_filterEffect} and \code{mean_testEffect} are provided then the
-test statistics are not necessary at all. However, if one of the mean effects
-are not given, then the missing mean effect will be computed internally.
-In addition, for the the two-tailed test, it is better to provide either
-\code{test} or \code{prob_givenEffect} or \code{mean_testEffect} to obtain the
-accurate test direction.
+If one of the mean effects \code{mean_filterEffect} and \code{mean_testEffect}
+are not provided then the missing mean effect will be computed internally.
 }
 \examples{
 m = 1000
@@ -115,7 +107,7 @@ pvals = 1 - pnorm(tests)                        # pvalue
 
 results <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
                      effectType = "continuous", method = "BH")
-results2 <- opw(pvalue = pvals, filter = filters, test = tests, ranks = TRUE,
+results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
                effectType = "continuous", tail = 2, method = "BH")
 
 mod <- lm(log(filters) ~ tests)
@@ -136,7 +128,7 @@ probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
 results4 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs,
                      effectType = "continuous", tail = 2, method = "BH")
 
-probs2 <- dnorm(filters, mean = mean(filters), sd = 1)
+probs2 <- dnorm(filters, mean = 0, sd = 1)
 results5 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs2,
                      effectType = "continuous", tail = 2, method = "BH")
 

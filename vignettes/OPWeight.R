@@ -11,6 +11,7 @@ library(tibble)
 library(qvalue)
 library(MASS)
 
+## ----dataProcessing, message=FALSE, warning=FALSE------------------------
 data("airway", package = "airway")
 dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
 dds <- DESeq(dds)
@@ -22,8 +23,9 @@ dim(de_res_air)
 
 ## ----loadOPWeight, message=FALSE, warning=FALSE--------------------------
 library("OPWeight")
-opw_results <- opw(pvalue = de_res_air$pvalue, filter = de_res_air$baseMean, 
-                  ranks = TRUE, test = de_res_air$stat, alpha = .05, tail = 2, 
+filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
+opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, 
+                  ranks = TRUE, test = de_res_air$stat, alpha = .1, tail = 2, 
                   effectType = "continuous", method = "BH")
 
 ## ----outputsName---------------------------------------------------------
@@ -37,17 +39,17 @@ opw_results$rejections
 
 ## ----probVsWeight--------------------------------------------------------
 m = opw_results$totalTests
-ranks = 1:m
+testRanks = 1:m
 probs = opw_results$probGivenEffect
 weights = opw_results$weight
-dat = data.frame(ranks, probs, weights)
-p_prob = ggplot(dat, aes(x = ranks, y = probs)) + geom_point(size = .5, col="firebrick4") + 
+dat = data.frame(testRanks, probs, weights)
+p_prob = ggplot(dat, aes(x = testRanks, y = probs)) + geom_point(size = .5, col="firebrick4") + 
     labs(y = "p(rank | effect)")
-p_weight = ggplot(dat, aes(x = ranks, y = weights)) + geom_point(size = .5, col="firebrick4")
-grid.arrange(p_prob, p_weight, ncol = 2)
+p_weight = ggplot(dat, aes(x = testRanks, y = weights)) + geom_point(size = .5, col="firebrick4")
+plot_grid(p_prob, p_weight, labels = c("A", "B"))
 
 ## ----sumPlots------------------------------------------------------------
-Data <- tibble(test=de_res_air$stat, pval=de_res_air$pvalue, filter=de_res_air$baseMean)
+Data <- tibble(pval=de_res_air$pvalue, filter=de_res_air$baseMean)
 
 barlines <- "#1F3552"
 
@@ -68,30 +70,40 @@ p_ecdf <- ggplot(Data, aes(x = pval)) +
 			labs(x = "pvalues", title="empirical cumulative distribution")+
 			theme(plot.title = element_text(size = rel(.7)))
 
-grid.arrange(hist_pval, hist_filter, pval_filter, p_ecdf, 
-		ncol = 2, heights = c(7, 7), top = "Airway: data summary")
+p <- plot_grid(hist_pval, hist_filter, pval_filter, p_ecdf, 
+               labels = c("A", "B", "c", "D"), ncol = 2)
+# now add the title
+title <- ggdraw() + draw_label("Airway: data summary")
+plot_grid(title, p, ncol = 1, rel_heights=c(0.1, 1)) 
 
 
 ## ----dataAnalysis--------------------------------------------------------
+# initial stage--------
+pvals = de_res_air$pvalue
+tests = qnorm(pvals/2, lower.tail = FALSE)
+filters = de_res_air$baseMean + .0001
+Data <- tibble(pvals, tests, filters)
+
+
 # estimate the true null and alternative test sizes------
-m = length(Data$pval); m
-null = qvalue(Data$pval, pi0.method="bootstrap")$pi0; null
+m = length(Data$pvals); m
+null = qvalue(Data$pvals, pi0.method="bootstrap")$pi0; null
 m0 = ceiling(null*m); m0
 m1 = m - m0; m1
 
 # fit box-cox regression
 #--------------------------------
-bc <- boxcox(Data$filter ~ Data$test, plotit = FALSE)
+
+bc <- boxcox(Data$filters ~ Data$tests)
 lambda <- bc$x[which.max(bc$y)]; lambda
-model <- lm(Data$filter^lambda ~ Data$test)
+model <- lm(Data$filters^lambda ~ Data$tests)
 
-# lambda = 0. Therefore, we use log-transformation
-
-model <- lm(log(Data$filter) ~ Data$test)
+# If lambda = 0. use log-transformation
+# model <- lm(log(Data$filters) ~ Data$tests)
 
 # etimated test efects of the true altrnatives------------
 test_effect = if(m1 == 0) {0
-} else {sort(abs(Data$test), decreasing = T)[1:m1]}		# two-tailed test
+} else {sort(Data$tests, decreasing = T)[1:m1]}		# two-tailed test
 
 # for the continuous effects etimated mean effects
 mean_testEffect = mean(test_effect, na.rm = T)

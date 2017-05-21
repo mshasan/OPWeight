@@ -1,13 +1,13 @@
 #' @title Perform Optimal Pvalue Weighting
 #'
 #' @description A function to perform weighted pvalue multiple hypothesis test.
-#' This function compute the probabilities of the tests' ranks, and consequently
+#' This function compute either the probabilities of the tests' ranks or the
+#' probabilities of the filters given the effect sizes, and consequently
 #' the weights, then provides the number of rejected null hypothesis and the list of
 #' the rejected pvalues as well as the corresponing filter statistics.
 #'
 #' @param  pvalue vector of pvalues of the test statistics
 #' @param filter vector of filter statistics
-#' @param test vector of test statistics
 #' @param prob_givenEffect the probabilities of the filters or filters' ranks given
 #' the mean of the filter effects
 #' @param ranks determine what type of probabilities \code{prob_givenEffect} is used
@@ -18,8 +18,6 @@
 #' @param nrep number of replications for importance sampling, default value is 10,000,
 #' can be increased to obtain smoother probability curves
 #' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test.
-#' For the two-tailed test, either \code{test} or \code{prob_givenEffect}
-#' or \code{mean_testEffect} must needs to be provided
 #' @param delInterval interval between the \code{delta} values of a sequence. Note that,
 #' \code{delta} is a LaGrange multiplier, necessary to normalize the weight
 #' @param method type of methods is used to obtain the results; c("BH", "BON"),
@@ -48,32 +46,25 @@
 #' The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 #' from a simple linear regression with box-cox transformation between the test
 #' and filter statistics, where the filters are regressed on the test statistics.
-#' Thus, filters need to be positive to apply \code{boxcox} from the \code{R} library \code{MASS}
-#' Then the estimated \code{mean_filterEffect} and
+#' Thus, filters need to be positive to apply \code{boxcox} from the \code{R}
+#' library \code{MASS}. Then the estimated \code{mean_filterEffect} and
 #' \code{mean_testEffect} are used to obtian the \code{prob_givenEffect} and the weights.
 #' Thus, in order to apply the function properly, it is crucial to understand the
-#' uses of the parameters \code{test}, \code{mean_filterEffect} and \code{mean_testEffect}.
-#' If the test statistics are provided, and \code{mean_filterEffect} and
-#' \code{mean_testEffect} are not provided then the supplied test statistics will
-#' be used to compute the relationship between the filter statistics and the
-#' test statistics. If none of them are given then the \code{pvalue} will be used to
-#' compute the test statistics.\cr
+#' uses \code{mean_filterEffect} and \code{mean_testEffect}. If \code{mean_filterEffect} and
+#' \code{mean_testEffect} are not provided then the test statistics computed from
+#' the pvalues will be used to compute the relationship between the filter
+#' statistics and the test statistics.\cr
 #'
-#' If \code{mean_filterEffect} and \code{mean_testEffect} are provided then the
-#' test statistics are not necessary at all. However, if one of the mean effects
-#' are not given, then the missing mean effect will be computed internally.
-#' In addition, for the the two-tailed test, it is better to provide either
-#' \code{test} or \code{prob_givenEffect} or \code{mean_testEffect} to obtain the
-#' accurate test direction.
+#' If one of the mean effects \code{mean_filterEffect} and \code{mean_testEffect}
+#' are not provided then the missing mean effect will be computed internally.
 #'
 #' @author Mohamad S. Hasan and Paul Schliekelman
 #'
 #' @export
 #'
-#' @import OPWeight prob_rank_givenEffect
-#' @import OPWeight weight_binary
-#' @import OPWeight weight_continuous
 #' @import qvalue qvalue
+#' @import tibble tibble
+#' @import MASS boxcox
 #'
 #' @seealso \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
 #' \code{\link{weight_continuous}} \code{\link{qvalue}} \code{\link{dnorm}}
@@ -99,7 +90,7 @@
 #'
 #' results <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
 #'                      effectType = "continuous", method = "BH")
-#' results2 <- opw(pvalue = pvals, filter = filters, test = tests, ranks = TRUE,
+#' results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
 #'                effectType = "continuous", tail = 2, method = "BH")
 #'
 #' mod <- lm(log(filters) ~ tests)
@@ -120,7 +111,7 @@
 #' results4 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs,
 #'                      effectType = "continuous", tail = 2, method = "BH")
 #'
-#' probs2 <- dnorm(filters, mean = mean(filters), sd = 1)
+#' probs2 <- dnorm(filters, mean = 0, sd = 1)
 #' results5 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs2,
 #'                      effectType = "continuous", tail = 2, method = "BH")
 #'
@@ -170,7 +161,7 @@
 # rejections_list = list of rejected pvalues and corresponding filter statistics
 #-------------------------------------------------------------------------------
 
-opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FALSE,
+opw <- function(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
                 mean_filterEffect = NULL, mean_testEffect = NULL,
                 effectType = c("continuous", "binary"), alpha = .05, nrep = 10000,
                 tail = 1L, delInterval = .0001, method = c("BH", "BON"), ... )
@@ -182,31 +173,29 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         m1 = m - m0
 
         # determine the side of the tests-------------
-        if(is.null(mean_testEffect) & is.null(test) & is.null(prob_givenEffect))
-            {message("using right-tailed test since test needs to be computed from the pvalue")
+        if(any(filter <= 0)){
+             stop("filter statistics need to be positive")
         }
 
         # compute test statistics from the pvalues---------
-        if(is.null(test)){
-            if(tail == 1){
-                test <- qnorm(pvalue, lower.tail = FALSE)
-            } else{
-                test <- qnorm(pvalue/2, lower.tail = FALSE)
-            }
+        if(tail == 1){
+            test <- qnorm(pvalue, lower.tail = FALSE)
         } else {
-            test <- test
+            test <- qnorm(pvalue/2, lower.tail = FALSE)
         }
 
         test[which(!is.finite(test))] <- NA
 
         # estimate the true alterantive test effect sizes----------------
-        if(m1 == 0){test_effect_vec <- 0
+        if(m1 == 0){
+            test_effect_vec <- 0
         } else {
             test_effect_vec <-  sort(test, decreasing = TRUE)[1:m1]
         }
 
         # estimate the mean test effect size-------------
-        if(!is.null(mean_testEffect)){mean_testEffect <- mean_testEffect
+        if(!is.null(mean_testEffect)){
+            mean_testEffect <- mean_testEffect
         } else {
             if(effectType == "continuous"){
                 mean_testEffect <- mean(test_effect_vec, na.rm = TRUE)
@@ -215,14 +204,16 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
             }
         }
 
-        # estimate lambda from box-cox transformation----------------
+        # estimate lambda from the box-cox transformation----------------
         bc <- boxcox(filter ~ test)
         lambda <- bc$x[which.max(bc$y)]
 
         # estimate the mean filter effect size------------------
-        if(!is.null(mean_filterEffect)){mean_filterEffect <- mean_filterEffect
+        if(!is.null(mean_filterEffect)){
+            mean_filterEffect <- mean_filterEffect
         } else {
-            if(lambda == 0){model <- lm(log(filter + .0001) ~ test)
+            if(lambda == 0){
+                model <- lm(log(filter + .0001) ~ test)
             } else {
                 model <- lm(filter**lambda ~ test)
             }
@@ -230,13 +221,14 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
         }
 
         # compute the probability of the filter given the mean filter effect
-        if(!is.null(prob_givenEffect)){prob <- prob_givenEffect
+        if(!is.null(prob_givenEffect)){
+            prob <- prob_givenEffect
         } else {
             if(ranks == FALSE){
                 if(lambda == 0){
-                    prob <- dnorm(log(filter + .0001), mean = mean_testEffect, sd = 1)
+                    prob <- dnorm(log(filter + .0001), mean = 0, sd = 1)
                 } else {
-                    prob <- dnorm(filter**lambda, mean = mean_testEffect, sd = 1)
+                    prob <- dnorm(filter**lambda, mean = 0, sd = 1)
                 }
             } else {
                 prob <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
@@ -244,13 +236,13 @@ opw <- function(pvalue, filter, test = NULL, prob_givenEffect = NULL, ranks = FA
             }
         }
 
-        # compute the weights------------
+        # compute the weights (always right-tailed)------------
         if(effectType == "continuous"){
             wgt = weight_continuous(alpha = alpha, et = mean_testEffect, m = m,
-                                    tail = tail, delInterval = delInterval, prob = prob)
+                            tail = 1, delInterval = delInterval, prob = prob)
         } else {
             wgt = weight_binary(alpha = alpha, et = mean_testEffect, m = m, m1 = m1,
-                                tail = tail, delInterval = delInterval, prob = prob)
+                                tail = 1, delInterval = delInterval, prob = prob)
         }
 
         # formulate a data set-------------
