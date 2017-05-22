@@ -7,7 +7,9 @@ export(weight_binary)
 export(weight_continuous)
 import(stats)
 importFrom(graphics, hist)
+importFrom(MASS, boxcox)
 importFrom(qvalue, qvalue)
 importFrom(tibble, tibble)
-importFrom(MASS, boxcox)
+importFrom(utils, setWinProgressBar, winProgressBar)
+
 

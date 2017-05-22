@@ -7,7 +7,8 @@
 opw(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
   mean_filterEffect = NULL, mean_testEffect = NULL,
   effectType = c("continuous", "binary"), alpha = 0.05, nrep = 10000,
-  tail = 1L, delInterval = 1e-04, method = c("BH", "BON"), ...)
+  tail = 1L, delInterval = 1e-04, method = c("BH", "BON"),
+  monitor = FALSE, ...)
 }
 \arguments{
 \item{pvalue}{vector of pvalues of the test statistics}
@@ -37,6 +38,8 @@ can be increased to obtain smoother probability curves}
 
 \item{method}{type of methods is used to obtain the results; c("BH", "BON"),
 Benjemini-Hochberg or Bonferroni}
+
+\item{monitor}{to observe the progress of the computation}
 
 \item{...}{Arguments passed to internal functions}
 }
@@ -96,8 +99,12 @@ statistics and the test statistics.\cr
 
 If one of the mean effects \code{mean_filterEffect} and \code{mean_testEffect}
 are not provided then the missing mean effect will be computed internally.
+
+If \code{monitor = TRUE} then a window will open to see the progress of the
+computation. It is useful for a large number of tests
 }
 \examples{
+# generate pvalues and filter statistics
 m = 1000
 set.seed(3)
 filters = runif(m, min = 0, max = 2.5)          # filter statistics
@@ -105,11 +112,15 @@ H = rbinom(m, size = 1, prob = 0.1)             # hypothesis true or false
 tests = rnorm(m, mean = H * filters)            # Z-score
 pvals = 1 - pnorm(tests)                        # pvalue
 
+# ranks = FLASE to use probability from the normal density
 results <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
                      effectType = "continuous", method = "BH")
-results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
-               effectType = "continuous", tail = 2, method = "BH")
 
+# ranks = TRUE to use ranks probability
+results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
+               effectType = "continuous", tail = 2, method = "BH", monitor = TRUE)
+
+# supply the mean effects for both the filters and the tests externally as follows:
 mod <- lm(log(filters) ~ tests)
 et = mean(tests)
 ey = mod$coef[[1]] + mod$coef[[2]]*et
@@ -117,7 +128,7 @@ results3 <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
                mean_filterEffect = ey, mean_testEffect = et, tail = 2,
                effectType = "continuous", method = "BH")
 
-# compute the probabilities of rank for 1 to 100 tests
+# supply the probabilities externally as follows:
 library(qvalue)
 ranks <- 1:m
 nullProp = qvalue(p = pvals, pi0.method = "bootstrap")$pi0

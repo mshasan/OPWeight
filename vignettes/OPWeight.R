@@ -24,9 +24,8 @@ dim(de_res_air)
 ## ----loadOPWeight, message=FALSE, warning=FALSE--------------------------
 library("OPWeight")
 filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
-opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, 
-                  ranks = TRUE, test = de_res_air$stat, alpha = .1, tail = 2, 
-                  effectType = "continuous", method = "BH")
+opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, ranks = TRUE, 
+                   alpha = .1, tail = 2, effectType = "continuous", method = "BH")
 
 ## ----outputsName---------------------------------------------------------
 names(opw_results)

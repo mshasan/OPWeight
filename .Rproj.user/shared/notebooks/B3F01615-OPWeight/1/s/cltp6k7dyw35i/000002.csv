@@ -1,4 +1,0 @@
-"0","data(""airway"", package = ""airway"")"
-"0","dds <- DESeqDataSet(se = airway, design = ~ cell + dex)"
-"0","dds <- DESeq(dds)"
-"0","de_res_air <- as.data.frame(results(dds))"

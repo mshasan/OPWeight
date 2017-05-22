@@ -9,6 +9,7 @@
 #' @param nrep number of replications for importance sampling
 #' @param m0 number of true null hypothesis
 #' @param m1 number of true alternative hypothesis
+#' @param monitor to observe the progress of the computation
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
 #' then \code{ey} should be mean of the filter effect sizes,
@@ -18,6 +19,9 @@
 #' then \code{ey} should be median or any discrete value of the
 #' filter effect sizes. This is called hypothesis testing for the Binary
 #' effect sizes.\cr
+#'
+#' If \code{monitor = TRUE} then a window will open to see the progress of the
+#' computation. It is useful for a large number of tests
 #'
 #' \code{m1} and \code{m0} can be estimated using \code{qvalue} from
 #' a bioconductor package \code{qvalue}.
@@ -36,9 +40,9 @@
 #'
 #' # compute the probabilities of the ranks of a test being rank 1 to 100 if the
 #' # targeted test effect is 2 and the overall mean filter effect is 1.
-#' ranks <- 1:100
+#' ranks <- 1:1000
 #' prob <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
-#'                               m0 = 50, m1 = 50)
+#'                               m0 = 500, m1 = 500, monitor = FALSE)
 #'
 #' # plot
 #' plot(ranks,prob)
@@ -55,15 +59,18 @@
 # m1 = number of true alternative hypothesis
 
 # internal parameters:-----
+# m = total number of tests
 # t = generate test statistics for target test with effect size et
 # p0 = prob of null test having higher test stat value than t
 # p1 = prob of alt test having higher test stat value than t
+# pb = monitor progress bar
 
 # output:-----
 # prob = p(rank=k|effect=ey)
 #===============================================================================
-prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1)
+prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1, monitor = FALSE)
 	{
+        m = m0 + m1
 		t <- rnorm(nrep, et, 1)
 		p0 <- pnorm(-t)
 		p1 <- pnorm(ey - t)
@@ -76,10 +83,15 @@ prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1)
 
 		prob <- ifelse(et == 0, mean(dnorm(k, mean0, sqrt(var0))),
 					   mean(dnorm(k, mean1, sqrt(var1))))
+
+		if(monitor != FALSE){
+    		pb <- winProgressBar(title = "ranks probability", min = 0, max = m, width = 300)
+    	    setWinProgressBar(pb, k, title = paste(round(k/m*100), "% done"))
+    		close(pb)
+		}
+
 		return(prob)
 	}
-
-
 
 
 

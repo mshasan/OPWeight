@@ -22,6 +22,7 @@
 #' \code{delta} is a LaGrange multiplier, necessary to normalize the weight
 #' @param method type of methods is used to obtain the results; c("BH", "BON"),
 #' Benjemini-Hochberg or Bonferroni
+#' @param monitor to observe the progress of the computation
 #' @param ... Arguments passed to internal functions
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
@@ -58,6 +59,9 @@
 #' If one of the mean effects \code{mean_filterEffect} and \code{mean_testEffect}
 #' are not provided then the missing mean effect will be computed internally.
 #'
+#' If \code{monitor = TRUE} then a window will open to see the progress of the
+#' computation. It is useful for a large number of tests
+#'
 #' @author Mohamad S. Hasan and Paul Schliekelman
 #'
 #' @export
@@ -81,6 +85,7 @@
 #'
 #'
 #' @examples
+#' # generate pvalues and filter statistics
 #' m = 1000
 #' set.seed(3)
 #' filters = runif(m, min = 0, max = 2.5)          # filter statistics
@@ -88,11 +93,15 @@
 #' tests = rnorm(m, mean = H * filters)            # Z-score
 #' pvals = 1 - pnorm(tests)                        # pvalue
 #'
+#' # ranks = FLASE to use probability from the normal density
 #' results <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
 #'                      effectType = "continuous", method = "BH")
-#' results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
-#'                effectType = "continuous", tail = 2, method = "BH")
 #'
+#' # ranks = TRUE to use ranks probability
+#' results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
+#'                effectType = "continuous", tail = 2, method = "BH", monitor = TRUE)
+#'
+#' # supply the mean effects for both the filters and the tests externally as follows:
 #' mod <- lm(log(filters) ~ tests)
 #' et = mean(tests)
 #' ey = mod$coef[[1]] + mod$coef[[2]]*et
@@ -100,7 +109,7 @@
 #'                mean_filterEffect = ey, mean_testEffect = et, tail = 2,
 #'                effectType = "continuous", method = "BH")
 #'
-#' # compute the probabilities of rank for 1 to 100 tests
+#' # supply the probabilities externally as follows:
 #' library(qvalue)
 #' ranks <- 1:m
 #' nullProp = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
@@ -164,7 +173,7 @@
 opw <- function(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
                 mean_filterEffect = NULL, mean_testEffect = NULL,
                 effectType = c("continuous", "binary"), alpha = .05, nrep = 10000,
-                tail = 1L, delInterval = .0001, method = c("BH", "BON"), ... )
+                tail = 1L, delInterval = .0001, method = c("BH", "BON"), monitor = FALSE, ... )
     {
         # compute the number of tests------------
         m = length(pvalue)
@@ -221,6 +230,7 @@ opw <- function(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
         }
 
         # compute the probability of the filter given the mean filter effect
+        message("computing probabilities")
         if(!is.null(prob_givenEffect)){
             prob <- prob_givenEffect
         } else {
@@ -232,11 +242,14 @@ opw <- function(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
                 }
             } else {
                 prob <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
-                               ey = mean_filterEffect, nrep = nrep, m0 = m0, m1 = m1)
+                            ey = mean_filterEffect, nrep = nrep, m0 = m0, m1 = m1,
+                            monitor = monitor)
             }
         }
+        message("finished computing the probabilities")
 
         # compute the weights (always right-tailed)------------
+        message("computing weights")
         if(effectType == "continuous"){
             wgt = weight_continuous(alpha = alpha, et = mean_testEffect, m = m,
                             tail = 1, delInterval = delInterval, prob = prob)
@@ -244,6 +257,7 @@ opw <- function(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
             wgt = weight_binary(alpha = alpha, et = mean_testEffect, m = m, m1 = m1,
                                 tail = 1, delInterval = delInterval, prob = prob)
         }
+        message("finished computing the weights")
 
         # formulate a data set-------------
         Data = tibble(pvalue, filter)
