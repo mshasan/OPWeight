@@ -1,47 +1,23 @@
 ## ----setup, echo = FALSE-------------------------------------------------
 knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
 
-## ----dataAnalysis--------------------------------------------------------
-# initial stage--------
-pvals = de_res_air$pvalue
-tests = qnorm(pvals/2, lower.tail = FALSE)
-filters = de_res_air$baseMean + .0001    # to ensure filters are postive for the box-cox
+## ----ranksProb-----------------------------------------------------------
+set.seed(123)
+prob_cont <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
+                   ey = mean_filterEffect, nrep = 10000, m0 = m0, m1 = m1)
 
-# formulate a data set-------------
-Data = tibble(pvals, filters)
-OD <- Data[order(Data$filters, decreasing=T), ]
-Ordered.pvalue <- OD$pvals
+## ----weights-------------------------------------------------------------
+wgt <- weight_continuous(alpha = .1, et = mean_testEffect, m = m, ranksProb = prob_cont)
 
+## ----results-------------------------------------------------------------
+alpha = .1
+padj <- p.adjust(Ordered.pvalue/wgt, method = "BH")
+rejections_list = OD[which((padj <= alpha) == TRUE), ]
+n_rejections = dim(rejections_list)[1]
+n_rejections
 
-# estimate the true null and alternative test sizes------
-m = length(Data$pvals); m
-nullProp = qvalue(Data$pvals, pi0.method="bootstrap")$pi0; nullProp
-m0 = ceiling(nullProp*m); m0
-m1 = m - m0; m1
-
-# fit box-cox regression
-#--------------------------------
-
-bc <- boxcox(filters ~ tests)
-lambda <- bc$x[which.max(bc$y)]; lambda
-model <- lm(filters^lambda ~ tests)
-
-# If lambda = 0. use log-transformation
-# model <- lm(log(Data$filters) ~ Data$tests)
-
-# etimated test efects of the true altrnatives------------
-test_effect = if(m1 == 0) {0
-} else {sort(tests, decreasing = T)[1:m1]}		# two-tailed test
-
-# for the continuous effects etimated mean effects
-mean_testEffect = mean(test_effect, na.rm = T)
-mean_testEffect
-mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
-mean_filterEffect
-
-# # for the binary effects estiamted median effects 
-# mean_testEffect = median(test_effect, na.rm = T)
-# mean_testEffect
-# mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
-# mean_filterEffect
+## ------------------------------------------------------------------------
+opw_results2 <- opw(pvalue = pvals, filter = filters, weight = wgt, 
+                     effectType = "continuous", alpha = .1, method = "BH")
+opw_results2$rejections
 
