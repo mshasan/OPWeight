@@ -4,21 +4,19 @@
 \alias{opw}
 \title{Perform Optimal Pvalue Weighting}
 \usage{
-opw(pvalue, filter, prob_givenEffect = NULL, ranks = FALSE,
+opw(pvalue, filter, weight = NULL, ranksProb = NULL,
   mean_filterEffect = NULL, mean_testEffect = NULL,
   effectType = c("continuous", "binary"), alpha = 0.05, nrep = 10000,
-  tail = 1L, delInterval = 1e-04, method = c("BH", "BON"),
-  monitor = FALSE, ...)
+  tail = 1L, delInterval = 1e-04, method = c("BH", "BON"), ...)
 }
 \arguments{
-\item{pvalue}{vector of pvalues of the test statistics}
+\item{pvalue}{a vector of pvalues of the test statistics}
 
-\item{filter}{vector of filter statistics}
+\item{filter}{a vector of filter statistics}
 
-\item{prob_givenEffect}{the probabilities of the filters or filters' ranks given
-the mean of the filter effects}
+\item{weight}{optional weight vector not required}
 
-\item{ranks}{determine what type of probabilities \code{prob_givenEffect} is used}
+\item{ranksProb}{probabilities of the ranks of the filters given the mean effect}
 
 \item{mean_filterEffect}{mean filter effect of the true alternatives}
 
@@ -39,16 +37,14 @@ can be increased to obtain smoother probability curves}
 \item{method}{type of methods is used to obtain the results; c("BH", "BON"),
 Benjemini-Hochberg or Bonferroni}
 
-\item{monitor}{to observe the progress of the computation}
-
 \item{...}{Arguments passed to internal functions}
 }
 \value{
 \code{totalTests} total number of hypothesis tests evaluated
 
-\code{propNulls} estimated propotion of the true null hypothesis
+\code{nullProp} estimated propotion of the true null hypothesis
 
-\code{probGivenEffect} probability of the ranks given the mean filter effect,
+\code{ranksProb} probability of the ranks given the mean filter effect,
 p(rank | ey = mean_filterEffect)
 
 \code{weight} normalized weight
@@ -60,10 +56,11 @@ filter statistics
 }
 \description{
 A function to perform weighted pvalue multiple hypothesis test.
-This function compute either the probabilities of the tests' ranks or the
-probabilities of the filters given the effect sizes, and consequently
-the weights, then provides the number of rejected null hypothesis and the list of
-the rejected pvalues as well as the corresponing filter statistics.
+This function compute the probabilities of the ranks of the filter statistics
+given the effect sizes, and consequently the weights if neighter the weights
+nor the probabilities are given. Then provides the number of rejected null
+hypothesis and the list of the rejected pvalues as well as the corresponing
+filter statistics.
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
@@ -76,21 +73,25 @@ then \code{mean_testEffect} and \code{mean_filterEffect} should be median or
 any discrete value of the test and filter effect sizes. This is called hypothesis
 testing for the Binary effect sizes, where \code{epsilon} refers to a fixed value.\cr
 
-Internally, \code{opw} function compute the \code{prob_givenEffect} and consequently
+The main goal of the function is to compute the probabilities of the ranks from
+the pvalues and the filter statistics, consequently the weights. Although \code{weights}
+\code{ranksProb} are optional, \code{opw} has the options so that one can compute
+the probabilities and the weights externally if necessary (see examples).\cr
+
+Internally, \code{opw} function compute the \code{ranksProb} and consequently
 the weights, then uses the pvalues to make conclusions about hypotheses.
-Therefore, if \code{prob_givenEffect} is given then \code{mean_filterEffect}
+Therefore, if \code{ranksProb} is given then \code{mean_filterEffect}
 and are redundant, and should not be provided to the funciton.
-Although \code{prob_givenEffect} is not required to the function,
-One can compute \code{prob_givenEffect} by using either the function
-\code{\link{prob_rank_givenEffect}} if \code{ranks == TRUE} or
-\code{\link{dnorm}} if \code{ranks == FALSE}.\cr
+Although \code{ranksProb} is not required to the function,
+One can compute \code{ranksProb} by using the function
+\code{\link{prob_rank_givenEffect}}.\cr
 
 The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
 from a simple linear regression with box-cox transformation between the test
 and filter statistics, where the filters are regressed on the test statistics.
 Thus, filters need to be positive to apply \code{boxcox} from the \code{R}
 library \code{MASS}. Then the estimated \code{mean_filterEffect} and
-\code{mean_testEffect} are used to obtian the \code{prob_givenEffect} and the weights.
+\code{mean_testEffect} are used to obtian the \code{ranksProb} and the weights.
 Thus, in order to apply the function properly, it is crucial to understand the
 uses \code{mean_filterEffect} and \code{mean_testEffect}. If \code{mean_filterEffect} and
 \code{mean_testEffect} are not provided then the test statistics computed from
@@ -99,9 +100,6 @@ statistics and the test statistics.\cr
 
 If one of the mean effects \code{mean_filterEffect} and \code{mean_testEffect}
 are not provided then the missing mean effect will be computed internally.
-
-If \code{monitor = TRUE} then a window will open to see the progress of the
-computation. It is useful for a large number of tests
 }
 \examples{
 # generate pvalues and filter statistics
@@ -112,23 +110,19 @@ H = rbinom(m, size = 1, prob = 0.1)             # hypothesis true or false
 tests = rnorm(m, mean = H * filters)            # Z-score
 pvals = 1 - pnorm(tests)                        # pvalue
 
-# ranks = FLASE to use probability from the normal density
-results <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
-                     effectType = "continuous", method = "BH")
+# general use
+results <- opw(pvalue = pvals, filter = filters, effectType = "continuous",
+                                              method = "BH")
 
-# ranks = TRUE to use ranks probability
-results2 <- opw(pvalue = pvals, filter = filters, ranks = TRUE,
-               effectType = "continuous", tail = 2, method = "BH", monitor = TRUE)
-
-# supply the mean effects for both the filters and the tests externally as follows:
+# supply the mean effects for both the filters and the tests externally
 mod <- lm(log(filters) ~ tests)
 et = mean(tests)
 ey = mod$coef[[1]] + mod$coef[[2]]*et
-results3 <- opw(pvalue = pvals, filter = filters, ranks = FALSE,
+results2 <- opw(pvalue = pvals, filter = filters,
                mean_filterEffect = ey, mean_testEffect = et, tail = 2,
                effectType = "continuous", method = "BH")
 
-# supply the probabilities externally as follows:
+# supply the rank probabilities externally
 library(qvalue)
 ranks <- 1:m
 nullProp = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
@@ -136,12 +130,13 @@ m0 = ceiling(nullProp*m)
 m1 = m - m0
 probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
                                         nrep = 10000, m0 = m0, m1 = m1)
-results4 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs,
-                     effectType = "continuous", tail = 2, method = "BH")
+results3 <- opw(pvalue = pvals, filter = filters, ranksProb = probs,
+                 ranks = FALSE, effectType = "continuous", tail = 2, method = "BH")
 
-probs2 <- dnorm(filters, mean = 0, sd = 1)
-results5 <- opw(pvalue = pvals, filter = filters, prob_givenEffect = probs2,
-                     effectType = "continuous", tail = 2, method = "BH")
+# supply weight externally
+wgt <- weight_continuous(alpha = .05, et = et, m = m, ranksProb = probs)
+results4 <- opw(pvalue = pvals, filter = filters, weight = wgt,
+                        effectType = "continuous", alpha = .05, method = "BH")
 
 }
 \seealso{

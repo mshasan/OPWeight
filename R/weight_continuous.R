@@ -8,7 +8,7 @@
 #' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test
 #' @param delInterval interval between the \code{delta} values of a sequence. Note that,
 #' \code{delta} is a LaGrange multiplier, necessary to normalize the weight
-#' @param prob probability of the rank given the effect size
+#' @param ranksProb probability of the tests given the effect size
 #'
 #' @details
 #' If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: \epsilon_i > 0,}
@@ -35,7 +35,7 @@
 #'
 #' # compute weight for the continuous case
 #' weight_cont <- weight_continuous(alpha = .05, et = 1, m = 100, tail = 1,
-#'                             delInterval = .0001, prob = prob2)
+#'                                      delInterval = .0001, ranksProb = prob2)
 #'
 #' # plot the weight
 #' plot(ranks, weight_cont)
@@ -49,7 +49,7 @@
 # m = totoal number of hypothesis test
 # tail = one-tailed or two-tailed hypothesis test
 # delInterval =  interval between the delta values of a sequesnce
-# prob = probability of rank given the effect size
+# ranksProb = probability of the tests given the effect size
 
 # internal parameters:-----
 # delta = sequene of delta (lagrange multiplier) values
@@ -65,17 +65,15 @@
 
 # function to compute weight continuous case
 #--------------------------------------
-weight_continuous <- function(alpha, et, m, tail = 1L, delInterval = .0001, prob)
+weight_continuous <- function(alpha, et, m, tail = 1L, delInterval = .0001, ranksProb)
 {
-    prob <- prob/sum(prob, na.rm = T)
+    prob <- ranksProb/sum(ranksProb, na.rm = T)
     delta <- seq(0, 1, delInterval)
-    findDelta <- function(delta)
-    {
-        weight <- tail*(m/alpha)*pnorm(et/2 + 1/et*log(delta/(alpha*prob)),
-                                       lower.tail=FALSE)
-        return(sum(weight, na.rm = TRUE))
-    }
-    weightSumVec <- vapply(delta, findDelta, 1)
+
+    weightSumVec <- sapply(delta, weight_by_delta, alpha = alpha, et = et, m = m,
+                           m1 = NULL, tail = tail, ranksProb = prob,
+                           effectType = "continuous")
+
     deltaOut <- delta[min(abs(weightSumVec - m)) == abs(weightSumVec - m)]
     deltaOut <- ifelse(length(deltaOut) > 1, .0001, deltaOut)
     weight.out <- tail*(m/alpha)*pnorm(et/2 + 1/et*log(deltaOut/(alpha*prob)),

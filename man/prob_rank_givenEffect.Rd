@@ -4,7 +4,7 @@
 \alias{prob_rank_givenEffect}
 \title{Probability of rank of test given effect size}
 \usage{
-prob_rank_givenEffect(k, et, ey, nrep = 10000, m0, m1, monitor = FALSE)
+prob_rank_givenEffect(k, et, ey, nrep = 10000, m0, m1)
 }
 \arguments{
 \item{k}{rank of a test}
@@ -18,8 +18,6 @@ prob_rank_givenEffect(k, et, ey, nrep = 10000, m0, m1, monitor = FALSE)
 \item{m0}{number of true null hypothesis}
 
 \item{m1}{number of true alternative hypothesis}
-
-\item{monitor}{to observe the progress of the computation}
 }
 \value{
 \code{prob} probability of the rank of a test
@@ -53,9 +51,9 @@ prob <- prob_rank_givenEffect(k = 3, et = 0, ey = 0, nrep = 10000,
 
 # compute the probabilities of the ranks of a test being rank 1 to 100 if the
 # targeted test effect is 2 and the overall mean filter effect is 1.
-ranks <- 1:1000
+ranks <- 1:100
 prob <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
-                              m0 = 500, m1 = 500, monitor = FALSE)
+                              m0 = 50, m1 = 50)
 
 # plot
 plot(ranks,prob)

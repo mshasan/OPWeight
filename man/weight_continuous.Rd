@@ -4,7 +4,7 @@
 \alias{weight_continuous}
 \title{Weight for the continuous effect sizes}
 \usage{
-weight_continuous(alpha, et, m, tail = 1L, delInterval = 1e-04, prob)
+weight_continuous(alpha, et, m, tail = 1L, delInterval = 1e-04, ranksProb)
 }
 \arguments{
 \item{alpha}{significance level of the hypothesis test}
@@ -18,7 +18,7 @@ weight_continuous(alpha, et, m, tail = 1L, delInterval = 1e-04, prob)
 \item{delInterval}{interval between the \code{delta} values of a sequence. Note that,
 \code{delta} is a LaGrange multiplier, necessary to normalize the weight}
 
-\item{prob}{probability of the rank given the effect size}
+\item{ranksProb}{probability of the tests given the effect size}
 }
 \value{
 \code{weight} normalized weight of the tests for the continuous case
@@ -46,7 +46,7 @@ plot(ranks, prob2)
 
 # compute weight for the continuous case
 weight_cont <- weight_continuous(alpha = .05, et = 1, m = 100, tail = 1,
-                            delInterval = .0001, prob = prob2)
+                                     delInterval = .0001, ranksProb = prob2)
 
 # plot the weight
 plot(ranks, weight_cont)

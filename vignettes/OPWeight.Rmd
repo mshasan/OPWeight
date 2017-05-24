@@ -29,12 +29,11 @@ ii) a vector of filter statistics, where each value corresponds to a pvalue
 
 and the auxiliary inputs are
 
-i) the probabilities of the filter statistics given the mean effect size
-ii) ranks is TRUE or FALSE to determine how the probabilities will be computed
-iii) mean of the filter and/or test effects
+i) the probabilities of the rank of the test statistics given the mean effect size
+iii) mean of the filter and/or test effect sizes
 iv) a significance level of $\alpha$ at which $FWER$ or $FDR$ will be controlled
 
-The proposed $OPW$ method uses covariates to compute either the probability of the ranks of the test statistics being higher than any other tests or the probability of the test given the mean effect size, $p(r_i \mid \varepsilon_i)$, then compute the weights from the probability corresponding to the pvalues. As an example, we will discuss an RNA-seq differential gene expression data called `r Biocpkg("airway")` from the $R$ library `r Biocpkg("airway")`. This data set is also used in the $IHW$ package vignettes [@ignatiadis2016natmeth].  
+The proposed $OPW$ method uses covariates to compute the probability of the ranks of the test statistics being higher than any other tests given the mean effect size, $p(r_i \mid \varepsilon_i)$, then compute the weights from the probability corresponding to the pvalues. As an example, we will discuss an RNA-seq differential gene expression data called `r Biocpkg("airway")` from the $R$ library `r Biocpkg("airway")`. This data set is also used in the $IHW$ package vignettes [@ignatiadis2016natmeth].  
 
 
 # Airway RNA-seq data example
@@ -60,6 +59,13 @@ data("airway", package = "airway")
 dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
 dds <- DESeq(dds)
 de_res_air <- as.data.frame(results(dds))
+# m = 1000
+# set.seed(3)
+# baseMean = runif(m, min = 0, max = 2.5)          # filter statistics
+# H = rbinom(m, size = 1, prob = 0.1)             # hypothesis true or false
+# stat = rnorm(m, mean = H * baseMean)            # Z-score
+# pvalue = 1 - pnorm(stat)
+# de_res_air = tibble(baseMean, stat, pvalue)
 ```
 
 The output is a `r class(de_res_air)` object containing the following columns for each gene in which each gene corresponds to a hypothesis test:
@@ -76,7 +82,8 @@ First we will load the proposed package `r Biocpkg("OPWeight")` and then show th
 ```{r loadOPWeight, message=FALSE, warning=FALSE}
 library("OPWeight")
 filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
-opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, ranks = TRUE, 
+set.seed(123)
+opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, 
                    alpha = .1, tail = 2, effectType = "continuous", method = "BH")
 ```
 
@@ -94,7 +101,7 @@ names(opw_results)
 For example, the estimated proportion of the true null hypothesis:
 
 ```{r nullProp}
-opw_results$propNulls
+opw_results$nullProp
 ```
 
 The number of rejected null hypothesis: 
@@ -109,9 +116,9 @@ weights, $w_i$:
 ```{r probVsWeight}
 m = opw_results$totalTests
 testRanks = 1:m
-probs = opw_results$probGivenEffect
+probs = opw_results$ranksProb
 weights = opw_results$weight
-dat = data.frame(testRanks, probs, weights)
+dat = tibble(testRanks, probs, weights)
 p_prob = ggplot(dat, aes(x = testRanks, y = probs)) + geom_point(size = .5, col="firebrick4") + 
     labs(y = "p(rank | effect)")
 p_weight = ggplot(dat, aes(x = testRanks, y = weights)) + geom_point(size = .5, col="firebrick4")
@@ -125,21 +132,25 @@ plot_grid(p_prob, p_weight, labels = c("A", "B"))
 
 If one wants to test $H_0: \varepsilon_i=0$ vs. $H_0: \varepsilon_i > 0$, i.e., the effect sizes follow continuous distribution, then one should use `effectType = "continuous"`. Similarly, if one wants to test $H_0: \varepsilon_i=0$ vs. $H_0: \varepsilon_i=\varepsilon$, i.e., effect sizes are binary; $0$ under the null model and a fixed value $\varepsilon$ under the alternative model, one should use `effectType = "binary"`. $opw()$ function can provide results based on $FDR$ or $FWER$, and the default method is Benjamini-Hochberg [@benjamini1997false] $FDR$ method.
 
-Other parameters that we did not use in the $opw()$ function can be discussed here. Internally, the function compute the `prob_givenEffect` and consequently the weights, then uses the pvalues to make conclusions about hypotheses. Therefore, if `prob_givenEffect` is given then  `mean_filterEffect` are redundant, and should not be provided to the funciton. Although `prob_givenEffect` is not required to the function, One can compute `prob_givenEffect` by using the function ***prob_rank_givenEffect***.
+The main goal of the function is to compute the probabilities of the ranks from
+the pvalues and the filter statistics, consequently the weights. Although `weights` and
+`ranksProb` are optional, $opw$ has the options so that one can compute the probabilities 
+and the weights externally if necessary (see Data analysis section).
 
-The function $opw()$ internally compute `mean_filterEffect` and `mean_testEffect` from a simple linear regression with *box-cox* transformation between the test and filter statistics, where the filters are regressed on the test statistics. Then the estimated `mean_filterEffect` and `mean_testEffect` are used to obtian the `prob_givenEffect` and the weights. Thus, in order to apply the function properly, it is crucial to understand the uses of the parameters `mean_filterEffect` and `mean_testEffect`. Note that, filters need to be positive to apply 
-$boxcox$ from the R library `r Biocpkg("MASS")`
+Other parameters that we did not use in the $opw()$ function can be discussed here. Internally, the function compute the `ranksprob` and consequently the weights, then uses the pvalues to make conclusions about hypotheses. Therefore, if `ranksprob` is given then  `mean_filterEffect` are redundant, and should not be provided to the funciton. Although `ranksprob` is not required to the function, One can compute `ranksprob` by using the function ***prob_rank_givenEffect***.
+
+The function $opw()$ internally compute `mean_filterEffect` and `mean_testEffect` from a simple linear regression with *box-cox* transformation between the test and filter statistics, where the filters are regressed on the test statistics. Then the estimated `mean_filterEffect` and `mean_testEffect` are used to obtian the `ranksprob` and the weights. Thus, in order to apply the function properly, it is crucial to understand the uses of the parameters `mean_filterEffect` and `mean_testEffect`. Note that, filters need to be positive to apply $box-cox$ from the R library `r Biocpkg("MASS")`
 
 If `mean_filterEffect` and `mean_testEffect` are not provided then the test statistics 
 computed from the pvalues will be used to obtain the relationship between the filter 
 statistics and the test statistics to compute the mean effects. If one of the mean effects 
 are not given, then the missing mean effect will be computed internally. 
 
-There are many ways to obtain the mean of the test effects, `mean_testEffect`, and the corresponding value of the filter effects, `mean_filterEffect`; however, in the proposed $R$ function $opw()$, we used a simple linear regression with *box-cox* transformation. Sometimes the *box-cox* transformation may not be the optimal choice or one wants to use a different model to obtain the relationship. In that situation, one can acquire the relationship between the filter and test statistics externally then provide `prob_givenEffect` or `mean_filterEffect` and `mean_testEffect` to perform the proposed optimal pvalue weighting. In the following section, we will show the details analysis procedure.
+There are many ways to obtain the mean of the test effects, `mean_testEffect`, and the corresponding value of the filter effects, `mean_filterEffect`; however, in the proposed $R$ function $opw()$, we used a simple linear regression with *box-cox* transformation. Sometimes the *box-cox* transformation may not be the optimal choice or one wants to use a different model to obtain the relationship. In that situation, one can acquire the relationship between the filter and test statistics externally then provide `ranksprob` or `mean_filterEffect` and `mean_testEffect` to perform the proposed optimal pvalue weighting. In the following section, we will show the details analysis procedure.
 
 # Data analysis
 
-Before applying the function let's perform a pre-screening analysis of the data set. Consider the above data set. First make some plots based on the filter statistics, and the pvalues.
+Before applying the methods, perform a pre-screening analysis of the data set. Consider the above data set. First make some plots based on the filter statistics, and the pvalues.
 
 ```{r sumPlots}
 Data <- tibble(pval=de_res_air$pvalue, filter=de_res_air$baseMean)
@@ -179,35 +190,39 @@ From the pre-analysis plots, we see the distribution of the filter statistics is
 
 We also observe from the plot that there is a weak relationship between the test statistics and the filter statistics; however, the ranked-filter statistics shows a potential relationship with the pvalues, i.e., low pvalues are enriched at the higher filter statistics. This relationship might be informative for the pvalue-weighting because we are more interested in the ranking of the filter statistics. Enrichment of the low pvalues at higher filter statistics also indicates that the filter statistics is correlated with the power under the alternative model. Furthermore, the bimodal distribution of the pvalues indicates two-tailed test criteria are necessary because pvalues close to $1$ be the cases that are significant in the opposite direction. We also observed the empirical cumulative distribution of the pvalues. The empirical cumulative distribution shows that the curve is almost linear for the high pvalues, which reveals the lesser importance of the higher pvalues, and the size of the low pvalues is very small.
 
-Now we first fit a linear regression with *box-cox* transformation then with *log-transformation*, and obtain the estimated `mean_filterEffect` and `mean_testEffect` in the following:
+We first fit a linear regression with *box-cox* transformation to obtain the estimated `mean_filterEffect` and `mean_testEffect` in the following:
 
 ```{r dataAnalysis}
 # initial stage--------
 pvals = de_res_air$pvalue
 tests = qnorm(pvals/2, lower.tail = FALSE)
-filters = de_res_air$baseMean + .0001
-Data <- tibble(pvals, tests, filters)
+filters = de_res_air$baseMean + .0001    # to ensure filters are postive for the box-cox
+
+# formulate a data set-------------
+Data = tibble(pvals, filters)
+OD <- Data[order(Data$filters, decreasing=T), ]
+Ordered.pvalue <- OD$pvals
 
 
 # estimate the true null and alternative test sizes------
 m = length(Data$pvals); m
-null = qvalue(Data$pvals, pi0.method="bootstrap")$pi0; null
-m0 = ceiling(null*m); m0
+nullProp = qvalue(Data$pvals, pi0.method="bootstrap")$pi0; nullProp
+m0 = ceiling(nullProp*m); m0
 m1 = m - m0; m1
 
 # fit box-cox regression
 #--------------------------------
 
-bc <- boxcox(Data$filters ~ Data$tests)
+bc <- boxcox(filters ~ tests)
 lambda <- bc$x[which.max(bc$y)]; lambda
-model <- lm(Data$filters^lambda ~ Data$tests)
+model <- lm(filters^lambda ~ tests)
 
 # If lambda = 0. use log-transformation
 # model <- lm(log(Data$filters) ~ Data$tests)
 
 # etimated test efects of the true altrnatives------------
 test_effect = if(m1 == 0) {0
-} else {sort(Data$tests, decreasing = T)[1:m1]}		# two-tailed test
+} else {sort(tests, decreasing = T)[1:m1]}		# two-tailed test
 
 # for the continuous effects etimated mean effects
 mean_testEffect = mean(test_effect, na.rm = T)
@@ -215,24 +230,55 @@ mean_testEffect
 mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
 mean_filterEffect
 
-# for the binary effects estiamted median effects 
-mean_testEffect = median(test_effect, na.rm = T)
-mean_testEffect
-mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
-mean_filterEffect
+# # for the binary effects estiamted median effects 
+# mean_testEffect = median(test_effect, na.rm = T)
+# mean_testEffect
+# mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
+# mean_filterEffect
 ```            
+In order to obtain the mean effects, we compute the predicted value of the filter statistics corresponding to the mean or median of the test statistics. The mean or median value of the test statistics is then used as the estimated `mean_testEffect` and the corresponding predicted value of the filter statistics is used as the estimated `mean_filterEffect`.
+
+Now compute the probabilities of the ranks of the filter statistics given the mean effect
+size computed above. Note that, for the ranks probability `et` and `ey` are the same, because mean effects of the filter statistics is only a single value.
+
+```{r ranksProb}
+set.seed(123)
+prob_cont <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
+                   ey = mean_filterEffect, nrep = 10000, m0 = m0, m1 = m1)
+```
+Then applying the probabilities to compute the weights
+
+```{r weights}
+wgt <- weight_continuous(alpha = .1, et = mean_testEffect, m = m, ranksProb = prob_cont)
+```
+Finally, obtain the total number and the list of the significant tests
+
+```{r results}
+alpha = .1
+padj <- p.adjust(Ordered.pvalue/wgt, method = "BH")
+rejections_list = OD[which((padj <= alpha) == TRUE), ]
+n_rejections = dim(rejections_list)[1]
+n_rejections
+```
+or apply $opw$ function to compute the final results
+
+```{r}
+opw_results2 <- opw(pvalue = pvals, filter = filters, weight = wgt, 
+                     effectType = "continuous", alpha = .1, method = "BH")
+opw_results2$rejections
+```
 
 The above procedures are performed by the $opw()$ function internally by default; 
 however, if one wants to try a different approach such as fitting a generalized 
 linear model instead of the *box-cox* transformation, then one can apply a different 
-model and follow the similar procedures to compute `mean_filterEffect` and 
-`mean_testEffect`, then apply the results in $opw()$ function.
-
-In order to obtain the mean effects, we compute the predicted value of the filter statistics corresponding to the mean or median of the test statistics. The mean or median value of the test statistics is then used as the estimated `mean_testEffect` and the corresponding predicted value of the filter statistics is used as the estimated `mean_filterEffect`.
+model and follow the similar procedures to compute the parameters `mean_filterEffect` and 
+`mean_testEffect`, or `weight` or `ranksProb`, then apply the results in $opw()$ function. Sometime it is necessary to perfom parallel computing; especially if the number of the hypothesis tests are large (e.g. billions). In his context, following the data analysis procedure could be convenient instead of using the $opw()$ function directly. To make the
+parallel computing faster, one may need to split the `weight_continuous` function.
+That is, use `weight_by_delta` function outside of the `weight_continuous` function and thence compute the weihgts.
 
 # Other functions
 
-In the package `r Biocpkg("OPweight")`, there are other useful functions: ***1) prob_rank_givenEffect, 2) weight_binary, 3) weight_continuous,  4) prob_rank_givenEffect_approx, 5) prob_rank_givenEffect_exact**, and ***6) prob_rank_givenEffect_simu**. First three functions are used inside the main function $opw()$; however, the remaining three functions are provided if anyone wants to see the behavior of the probability of the rank of the test statistic, $p(r_i \mid \varepsilon_i)$. In the original, article we proposed the probability method and showed an exact mathematical formula then verify the formula by simulations. The exact method requires intensive computation; therefore, we proposed an approximation. By applying the later three functions one can easily observe that all the methods perform similarly. However, for a large number of tests the simulation and the exact approach are computationally very slow; therefore, the approximation method is a better option. In fact, we actually need $p(r_i \mid E(\varepsilon_i))$ that is obtained by the function ***prob_rank_givenEffect***. For the details see Hasan and Schliekelman, (2017) and the corresponding supplementry materials.
+In the package `r Biocpkg("OPweight")`, there are other useful functions: ***1) prob_rank_givenEffect, 2) weight_binary, 3) weight_continuous,  4) weight_by_delta 50 prob_rank_givenEffect_approx, 6) prob_rank_givenEffect_exact**, and ***7) prob_rank_givenEffect_simu**. First three functions are used inside the main function $opw()$, and the fourth is used inside the second and the third; however, the remaining three functions are provided if anyone wants to see the behavior of the probability of the rank of the test statistic, $p(r_i \mid \varepsilon_i)$. In the original, article we proposed the probability method and showed an exact mathematical formula then verify the formula by simulations. The exact method requires intensive computation; therefore, we proposed an approximation. By applying the later three functions one can easily observe that all the methods perform similarly. However, for a large number of tests the simulation and the exact approach are computationally very slow; therefore, the approximation method is a better option. In fact, we actually need $p(r_i \mid E(\varepsilon_i))$, which is obtained by the function ***prob_rank_givenEffect***. For the details see Hasan and Schliekelman, (2017) and the corresponding supplementry materials.
 
 
 # References

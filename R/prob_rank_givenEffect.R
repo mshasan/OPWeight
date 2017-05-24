@@ -9,7 +9,6 @@
 #' @param nrep number of replications for importance sampling
 #' @param m0 number of true null hypothesis
 #' @param m1 number of true alternative hypothesis
-#' @param monitor to observe the progress of the computation
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
 #' then \code{ey} should be mean of the filter effect sizes,
@@ -40,9 +39,9 @@
 #'
 #' # compute the probabilities of the ranks of a test being rank 1 to 100 if the
 #' # targeted test effect is 2 and the overall mean filter effect is 1.
-#' ranks <- 1:1000
+#' ranks <- 1:100
 #' prob <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
-#'                               m0 = 500, m1 = 500, monitor = FALSE)
+#'                               m0 = 50, m1 = 50)
 #'
 #' # plot
 #' plot(ranks,prob)
@@ -68,7 +67,7 @@
 # output:-----
 # prob = p(rank=k|effect=ey)
 #===============================================================================
-prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1, monitor = FALSE)
+prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1)
 	{
         m = m0 + m1
 		t <- rnorm(nrep, et, 1)
@@ -83,12 +82,6 @@ prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1, monitor = FAL
 
 		prob <- ifelse(et == 0, mean(dnorm(k, mean0, sqrt(var0))),
 					   mean(dnorm(k, mean1, sqrt(var1))))
-
-		if(monitor != FALSE){
-    		pb <- winProgressBar(title = "ranks probability", min = 0, max = m, width = 300)
-    	    setWinProgressBar(pb, k, title = paste(round(k/m*100), "% done"))
-    		close(pb)
-		}
 
 		return(prob)
 	}
