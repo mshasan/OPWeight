@@ -20,7 +20,6 @@ LazyData: true
 Imports:
     graphics,
     stats,
-    utils
 Suggests:
     airway,
     BiocStyle,
