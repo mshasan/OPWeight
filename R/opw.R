@@ -191,12 +191,7 @@ opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffe
         } else {
 
             # compute test statistics from the pvalues---------
-            if(tail == 1){
-                test <- qnorm(pvalue, lower.tail = FALSE)
-            } else {
-                test <- qnorm(pvalue/2, lower.tail = FALSE)
-            }
-
+            test <- qnorm(pvalue/tail, lower.tail = FALSE)
             test[which(!is.finite(test))] <- NA
 
             # estimate the true alterantive test effect sizes----------------
@@ -242,12 +237,12 @@ opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffe
                     mean_filterEffect <- model$coef[[1]] + model$coef[[2]]*mean_testEffect
                 }
 
-                message("computing probabilities")
+                message("computing rank probabilities")
                 # compute the probability of the rank of the filter given the mean effect
                 ranksProb <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
                                ey = mean_filterEffect, nrep = nrep, m0 = m0, m1 = m1)
 
-                message("finished computing the probabilities")
+                message("finished computing the rank probabilities")
             }
 
             # compute the weights (always right-tailed)------------

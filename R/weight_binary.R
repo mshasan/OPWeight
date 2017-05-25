@@ -86,3 +86,13 @@ weight_binary <- function(alpha, et, m, m1, tail = 1L, delInterval = .0001, rank
 }
 
 
+
+
+
+
+
+
+
+
+
+
