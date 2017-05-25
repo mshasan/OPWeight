@@ -19,3 +19,5 @@ You can install the package as follows:
 library("devtools")
 install_github("mshasan/OPWeight")
 ```
+
+[![Build Status](https://travis-ci.org/mshasan/OPWeight.svg?branch=master)](https://travis-ci.org/user/pkg)
