@@ -46,6 +46,7 @@
 #' plot(ranks,prob)
 #===============================================================================
 # function to compute p(rank=k|filterEffect=ey) by normal approximation
+#------------------------------------------------------------------------
 # we used only uniform effects for continuous case.
 
 # Input:-----

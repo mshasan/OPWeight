@@ -47,6 +47,7 @@
 #'
 #===============================================================================
 # function to compute p(rank=k|filterEffect=ey) by exact method
+#---------------------------------------------------------------
 # we used only uniform effects for continuous case.
 
 # Input:-----

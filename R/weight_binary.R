@@ -43,6 +43,7 @@
 #'
 #===============================================================================
 # function to compute weight from p(rank=k|filterEffect=ey)
+#----------------------------------------------------------------
 
 # Input:-----
 # alpha = significance level of the hypotheis test

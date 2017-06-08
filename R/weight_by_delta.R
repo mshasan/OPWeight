@@ -35,7 +35,7 @@
 #'
 #===============================================================================
 # function to compute weight from p(rank=k|filterEffect=ey)
-
+#------------------------------------------------
 # Input:-----
 # delta = value of the LagRange multiplier
 # alpha = significance level of the hypothesis test

@@ -48,6 +48,7 @@
 #'
 #===============================================================================
 # function to compute p(rank=k|filterEffect=ey) by normal approximation
+#---------------------------------------------------
 
 # Input:-----
 # k rank of a test

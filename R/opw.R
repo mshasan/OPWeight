@@ -123,7 +123,7 @@
 #'                         effectType = "continuous", alpha = .05, method = "BH")
 #'
 #===============================================================================
-# function to apply opw methods on data
+# # function to apply opw methods on data
 #---------------------------------------------------
 # Input:
 #----------------------------
