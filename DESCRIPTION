@@ -31,7 +31,8 @@ Suggests:
     knitr,
     Matrix,
     rmarkdown,
-    scales
+    scales,
+    testthat
 VignetteBuilder: knitr
 biocViews:
     MultipleComparison,
