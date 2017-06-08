@@ -31,4 +31,3 @@ notifications:
     
     after_success:
   - R CMD BiocCheck .
-  - Rscript -e 'covr::coveralls()'
