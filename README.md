@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/mshasan/OPWeight.svg?branch=master)](https://travis-ci.org/mshasan/OPWeight)
+[![codecov.io](https://codecov.io/github/mshasan/OPWeight/coverage.svg?branch=master)](https://codecov.io/github/mshasan/OPWeight?branch=master)
+
 # OPWeight
 An R package to perform Optimal Pvalue Weighting for High-Throughput Data
 
@@ -20,4 +23,4 @@ library("devtools")
 install_github("mshasan/OPWeight")
 ```
 
-[![Build Status](https://travis-ci.org/mshasan/OPWeight.svg?branch=master)](https://travis-ci.org/mshasan/OPWeight)
+
