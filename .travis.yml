@@ -1,20 +1,14 @@
-# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 language: r
 sudo: false
 cache: packages
 
-# R versions to be tested on
 r:
   - bioc-devel
   - bioc-release
-  
-## Turn this to true before submission to CRAN/Bioconductor  
 warnings_are_errors: true
 
 r_github_packages:
   - jimhester/covr
-  
-## BiocCheck  
 bioc_packages:
   - BiocCheck
 
@@ -28,6 +22,3 @@ notifications:
   email:
     on_success: always
     on_failure: always
-    
-    after_success:
-  - R CMD BiocCheck .
