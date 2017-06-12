@@ -1,11 +1,7 @@
 Package: OPWeight
 Type: Package
 Title: Optimal Pvalue Weighting
-<<<<<<< HEAD
 Version: 0.99.2
-=======
-Version: 0.99.1
->>>>>>> 5cd1cb4fa0f885fed57fd88ddda0948f50a61d50
 Date: 2017-02-26
 Authors@R: c(person("Mohamad", "Hasan", email = "shakilmohamad7@gmail.com",
                   role = c("aut", "cre")),
