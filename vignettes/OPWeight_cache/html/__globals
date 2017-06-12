@@ -15,7 +15,7 @@ pronVsWeight	$	aes	data.frame	geom_point	ggplot	grid.arrange	labs	opw_results
 sumPlots	$	aes	c	de_res_air	draw_label	element_text	geom_histogram	geom_point	ggdraw	ggplot	labs	log10	plot_grid	pval	rank	rel	stat_ecdf	theme	tibble
 dataAnalysis	$	==	T	[[	boxcox	ceiling	de_res_air	if	length	lm	mean	order	qnorm	qvalue	sort	tibble	which.max	~
 probVsWeight	$	aes	c	geom_point	ggplot	labs	opw_results	plot_grid	tibble
-dataProcessing	DESeq	DESeqDataSet	airway	as.data.frame	data	results	~
+dataProcessing	DESeq	DESeqDataSet	airway	data	results	~
 ranksProb	m	m0	m1	mean_filterEffect	prob_rank_givenEffect	sapply	set.seed
 weights	m	mean_testEffect	prob_cont	weight_continuous
 results	<=	==	OD	Ordered.pvalue	dim	p.adjust	wgt	which

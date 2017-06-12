@@ -1,21 +1,11 @@
 ## ----setup, echo = FALSE-------------------------------------------------
 knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
 
-## ----loadlibs, message=FALSE, warning=FALSE------------------------------
-library("ggplot2")
-library("airway")
-library("DESeq2")
-library(gridExtra)
-library(cowplot)
-library(tibble)
-library(qvalue)
-library(MASS)
-
 ## ----dataProcessing, message=FALSE, warning=FALSE------------------------
 data("airway", package = "airway")
 dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
 dds <- DESeq(dds)
-de_res_air <- as.data.frame(results(dds))
+de_res_air <- results(dds)
 # m = 1000
 # set.seed(3)
 # baseMean = runif(m, min = 0, max = 2.5)          # filter statistics

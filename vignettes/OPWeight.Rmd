@@ -58,7 +58,7 @@ Process RNA-seq data
 data("airway", package = "airway")
 dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
 dds <- DESeq(dds)
-de_res_air <- as.data.frame(results(dds))
+de_res_air <- results(dds)
 # m = 1000
 # set.seed(3)
 # baseMean = runif(m, min = 0, max = 2.5)          # filter statistics
