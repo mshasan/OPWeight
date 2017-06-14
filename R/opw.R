@@ -181,7 +181,7 @@ opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffe
 
         # formulate a data set-------------
         Data = tibble(pvalue, filter)
-        OD <- Data[order(Data$filter, decreasing=T), ]
+        OD <- Data[order(Data$filter, decreasing=TRUE), ]
         Ordered.pvalue <- OD$pvalue
 
 
