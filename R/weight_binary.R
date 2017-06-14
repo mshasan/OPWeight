@@ -70,7 +70,7 @@
 #--------------------------------------
 weight_binary <- function(alpha, et, m, m1, tail = 1L, delInterval = .0001, ranksProb)
 {
-    prob <- ranksProb/sum(ranksProb, na.rm = T)
+    prob <- ranksProb/sum(ranksProb, na.rm = TRUE)
     delta <- seq(0, 1, delInterval)
 
     weightSumVec <- sapply(delta, weight_by_delta, alpha = alpha, et = et, m = m,
