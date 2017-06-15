@@ -14,8 +14,10 @@ vignette: >
 
 
 ```{r setup, echo = FALSE}
+#knitr::opts_chunk$set(fig.width = 8, fig.height = 8)
 knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
 ```
+
 # Introduction
 High throughput data is very common in modern science. The main property of these data is high-dimensionality; that is, the number of features is larger than the number of observations. There are many ways to study this kind of data, and multiple hypothesis testing is one of them. 
 In a multiple hypothesis test, generally a list of p-values $(p_i)$ are calculated, one for each hypothesis $(H_i)$ corresponding to one feature; the p-values are then compared with one or more predefined fixed or random thresholds to obtain the number of significant features. The key goal is to control the Family Wise Error Rate ($FWER$) or False Discovery Rate ($FDR$) while maximizing the power of the tests. 

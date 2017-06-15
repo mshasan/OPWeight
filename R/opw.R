@@ -15,19 +15,19 @@
 #' @param mean_testEffect mean test effect of the true alterantives
 #' @param effectType type of effect sizes; c("continuous", "binary")
 #' @param alpha significance level of the hypothesis test
-#' @param nrep number of replications for importance sampling, default value is 10,000,
-#' can be increased to obtain smoother probability curves
+#' @param nrep number of replications for importance sampling, default value is
+#' 10,000, can be increased to obtain smoother probability curves
 #' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test.
-#' @param delInterval interval between the \code{delta} values of a sequence. Note that,
-#' \code{delta} is a LaGrange multiplier, necessary to normalize the weight
+#' @param delInterval interval between the \code{delta} values of a sequence.
+#' Note that, \code{delta} is a LaGrange multiplier, necessary to normalize the weight
 #' @param method type of methods is used to obtain the results; c("BH", "BON"),
 #' Benjemini-Hochberg or Bonferroni
 #' @param ... Arguments passed to internal functions
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
-#' then the \code{mean_testEffect}  and \code{mean_filterEffect} should be mean of the test
-#' and filter effect sizes, respectively. This is called hypothesis testing for
-#' the continuous effect sizes.\cr
+#' then the \code{mean_testEffect}  and \code{mean_filterEffect} should be mean
+#' of the test and filter effect sizes, respectively. This is called hypothesis
+#' testing for the continuous effect sizes.\cr
 #'
 #' If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i = epsilon,}
 #' then \code{mean_testEffect} and \code{mean_filterEffect} should be median or
@@ -249,10 +249,12 @@ opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffe
             message("computing weights")
             if(effectType == "continuous"){
                 wgt = weight_continuous(alpha = alpha, et = mean_testEffect, m = m,
-                                        tail = 1, delInterval = delInterval, ranksProb = ranksProb)
+                                        tail = 1, delInterval = delInterval,
+                                        ranksProb = ranksProb)
             } else {
-                wgt = weight_binary(alpha = alpha, et = mean_testEffect, m = m, m1 = m1,
-                                    tail = 1, delInterval = delInterval, ranksProb = ranksProb)
+                wgt = weight_binary(alpha = alpha, et = mean_testEffect, m = m,
+                                    m1 = m1, tail = 1, delInterval = delInterval,
+                                    ranksProb = ranksProb)
             }
             message("finished computing the weights")
         }

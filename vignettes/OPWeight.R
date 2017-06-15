@@ -1,5 +1,16 @@
 ## ----setup, echo = FALSE-------------------------------------------------
+#knitr::opts_chunk$set(fig.width = 8, fig.height = 8)
 knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
+
+## ----loadlibs, message=FALSE, warning=FALSE------------------------------
+library("ggplot2")
+library("airway")
+library("DESeq2")
+library(gridExtra)
+library(cowplot)
+library(tibble)
+library(qvalue)
+library(MASS)
 
 ## ----dataProcessing, message=FALSE, warning=FALSE------------------------
 data("airway", package = "airway")
@@ -83,7 +94,7 @@ filters = de_res_air$baseMean + .0001    # to ensure filters are postive for the
 
 # formulate a data set-------------
 Data = tibble(pvals, filters)
-OD <- Data[order(Data$filters, decreasing=T), ]
+OD <- Data[order(Data$filters, decreasing=TRUE), ]
 Ordered.pvalue <- OD$pvals
 
 
@@ -105,16 +116,16 @@ model <- lm(filters^lambda ~ tests)
 
 # etimated test efects of the true altrnatives------------
 test_effect = if(m1 == 0) {0
-} else {sort(tests, decreasing = T)[1:m1]}		# two-tailed test
+} else {sort(tests, decreasing = TRUE)[1:m1]}		# two-tailed test
 
 # for the continuous effects etimated mean effects
-mean_testEffect = mean(test_effect, na.rm = T)
+mean_testEffect = mean(test_effect, na.rm = TRUE)
 mean_testEffect
 mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
 mean_filterEffect
 
 # # for the binary effects estiamted median effects 
-# mean_testEffect = median(test_effect, na.rm = T)
+# mean_testEffect = median(test_effect, na.rm = TRUE)
 # mean_testEffect
 # mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
 # mean_filterEffect

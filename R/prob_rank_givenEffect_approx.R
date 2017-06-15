@@ -76,8 +76,10 @@ prob_rank_givenEffect_approx <- function(k, et, ey, nrep = 10000, m0, m1,
     t <- rnorm(nrep, et, 1)
     p0 <- pnorm(-t, mean = 0, sd = 1, lower.tail = TRUE)
 
-    if(effectType == "binary"){p1 <- pnorm(ey - t, mean = 0, sd = 1, lower.tail = TRUE)
-    } else { if(ey == 0){p1 <- pnorm(ey - t, mean = 0, sd = 1, lower.tail = TRUE)
+    if(effectType == "binary"){
+        p1 <- pnorm(ey - t, mean = 0, sd = 1, lower.tail = TRUE)
+    } else { if(ey == 0){
+        p1 <- pnorm(ey - t, mean = 0, sd = 1, lower.tail = TRUE)
         } else {
             m = m0 + m1
             a = ey - 1
