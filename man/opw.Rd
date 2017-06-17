@@ -131,7 +131,7 @@ m1 = m - m0
 probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
                                         nrep = 10000, m0 = m0, m1 = m1)
 results3 <- opw(pvalue = pvals, filter = filters, ranksProb = probs,
-                 ranks = FALSE, effectType = "continuous", tail = 2, method = "BH")
+                 effectType = "continuous", tail = 2, method = "BH")
 
 # supply weight externally
 wgt <- weight_continuous(alpha = .05, et = et, m = m, ranksProb = probs)
