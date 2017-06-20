@@ -12,7 +12,7 @@ Description: This package perform weighted-pvalue based multiple hypothesis test
     method apply a probabilistic relationship between the test rank and the 
     corresponding test effect size.
 Depends: 
-    R (>= 3.3.0),
+    R (>= 3.4.0),
     qvalue,
     MASS,
     tibble
