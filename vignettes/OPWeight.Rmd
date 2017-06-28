@@ -44,10 +44,15 @@ We fist preprocess the `r Biocpkg("airway")` RNA-Seq data set using `r Biocpkg("
 Load required libraries
 
 ```{r loadlibs, message=FALSE, warning=FALSE}
+# install OPWeight package
+source("https://bioconductor.org/biocLite.R")
+biocLite("OPWeight")
+
+# load packages
+library("OPWeight")
 library("ggplot2")
 library("airway")
 library("DESeq2")
-library(gridExtra)
 library(cowplot)
 library(tibble)
 library(qvalue)
@@ -82,7 +87,6 @@ From the above columns, we will consider `baseMean` as the covariate. In the `r 
 First we will load the proposed package `r Biocpkg("OPWeight")` and then show the steps to conduct $OPW$ tests:
 
 ```{r loadOPWeight, message=FALSE, warning=FALSE}
-library("OPWeight")
 filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
 set.seed(123)
 opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, 

@@ -10,7 +10,7 @@
 
 <meta name="author" content="Mohamad S. Hasan and Paul Schliekelman" />
 
-<meta name="date" content="2017-06-15" />
+<meta name="date" content="2017-06-26" />
 
 <title>Introduction to OPWeight</title>
 
@@ -51,9 +51,9 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Introduction to OPWeight</h1>
 <h4 class="author"><em>Mohamad S. Hasan and Paul Schliekelman</em></h4>
-<h4 class="date"><em>15 June 2017</em></h4>
+<h4 class="date"><em>26 June 2017</em></h4>
 </div>
-<h4 class="package">Package version: <span style="font-weight: normal">OPWeight 0.99.3</span></h4>
+<h4 class="package">Package version: <span style="font-weight: normal">OPWeight 1.0.0</span></h4>
 
 <h1>Contents</h1>
 <div id="TOC">
@@ -87,10 +87,15 @@ document.addEventListener("DOMContentLoaded", function() {
 <h1><span class="header-section-number">2</span> Airway RNA-seq data example</h1>
 <p>We fist preprocess the <em><a href="http://bioconductor.org/packages/airway">airway</a></em> RNA-Seq data set using <em><a href="http://bioconductor.org/packages/DESeq2">DESeq2</a></em> <span class="citation">(Love, Huber, and Anders 2014)</span> to obtain the p-values, test statistics, and the covariates (filter statistics).</p>
 <p>Load required libraries</p>
-<pre class="r"><code>library(&quot;ggplot2&quot;)
+<pre class="r"><code># install OPWeight package
+source(&quot;https://bioconductor.org/biocLite.R&quot;)
+biocLite(&quot;OPWeight&quot;)
+
+# load packages
+library(&quot;OPWeight&quot;)
+library(&quot;ggplot2&quot;)
 library(&quot;airway&quot;)
 library(&quot;DESeq2&quot;)
-library(gridExtra)
 library(cowplot)
 library(tibble)
 library(qvalue)
@@ -115,8 +120,7 @@ de_res_air &lt;- results(dds)
 <pre><code>## [1] 64102     6</code></pre>
 <p>From the above columns, we will consider <code>baseMean</code> as the covariate. In the <em><a href="http://bioconductor.org/packages/DESeq2">DESeq2</a></em> paper, it has argued that the covariate <code>baseMean</code> and the test statistics <code>stat</code> are approximately independent under the null hypothesis, which fulfills the requirements for the <code>baseMean</code> to be the filter statistics.</p>
 <p>First we will load the proposed package <em><a href="http://bioconductor.org/packages/OPWeight">OPWeight</a></em> and then show the steps to conduct <span class="math inline">\(OPW\)</span> tests:</p>
-<pre class="r"><code>library(&quot;OPWeight&quot;)
-filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
+<pre class="r"><code>filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
 set.seed(123)
 opw_results &lt;- opw(pvalue = de_res_air$pvalue, filter = filters, 
                    alpha = .1, tail = 2, effectType = &quot;continuous&quot;, method = &quot;BH&quot;)</code></pre>

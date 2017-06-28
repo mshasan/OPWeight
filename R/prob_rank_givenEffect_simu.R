@@ -5,11 +5,11 @@
 #' information.
 #' @param s number of samples of test statistics composed of null and alternative
 #'  tests
-#' @param ey filter test efffect from the external information
-#' @param e.one one test effect that will vary across all tests
-#' @param m0 number of true null hypothesis
-#' @param m1 number of true alternative hypothesis
-#' @param effectType type of effect sizes, c("binary","continuous")
+#' @param ey Numeric, filter test efffect from the external information
+#' @param e.one Numeric, one test effect that will vary across all tests
+#' @param m0 Integer, number of true null hypothesis
+#' @param m1 Integer, number of true alternative hypothesis
+#' @param effectType Character ("continuous" or "binary"), type of effect sizes
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
 #' then \code{ey} should be mean of the filter effect sizes,
@@ -34,11 +34,16 @@
 #' a bioconductor package \code{qvalue}.
 #'
 #' @author Mohamad S. Hasan and Paul Schliekelman
+#'
 #' @export
+#'
 #' @import stats
+#'
 #' @seealso \code{\link{runif}} \code{\link{rnorm}} \code{\link{qvalue}}
-#' @return \code{r0} rank of the null test statistic\cr
-#'         \code{r1} rank of the alternative test statistic
+#'
+#' @return \code{r0} Integer, rank of the null test statistic\cr
+#'         \code{r1} Integer, rank of the alternative test statistic
+#'
 #' @examples
 #' # total number of sample generated (use sample size at least 1,000,000)
 #' sampleSize = 10000

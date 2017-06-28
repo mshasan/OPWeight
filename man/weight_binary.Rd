@@ -7,23 +7,27 @@
 weight_binary(alpha, et, m, m1, tail = 1L, delInterval = 1e-04, ranksProb)
 }
 \arguments{
-\item{alpha}{significance level of the hypotheis test}
+\item{alpha}{Numeric, significance level of the hypothesis test}
 
-\item{et}{mean effect size of the test statistics}
+\item{et}{Numeric, mean effect size of the test statistics}
 
-\item{m}{totoal number of hypothesis test}
+\item{m}{Integer, totoal number of hypothesis test}
 
-\item{m1}{number of true alternative hypothesis}
+\item{m1}{Integer, number of true alternative hypothesis}
 
-\item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test}
+\item{tail}{Integer (1 or 2), right-tailed or two-tailed hypothesis test.
+default is right-tailed test.}
 
-\item{delInterval}{interval between the \code{delta} values of a sequence. Note that,
-\code{delta} is a LaGrange multiplier, necessary to normalize the weight}
+\item{delInterval}{Numeric, interval between the \code{delta} values of a
+sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
+normalize the weight}
 
-\item{ranksProb}{probability of the tests given the effect size}
+\item{ranksProb}{Numeric vector of the ranks probability of the tests
+given the effect size}
 }
 \value{
-\code{weight} normalized weight of the tests for the binary case
+\code{weight} Numeric vector of normalized weight of the tests for
+the binary case
 }
 \description{
 Compute weight from the probability of the rank given the effect size

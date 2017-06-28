@@ -2,13 +2,16 @@
 #'
 #' @description Compute weight from the probability of the rank given the effect size
 #' for the continuous effect size
-#' @param alpha significance level of the hypothesis test
-#' @param et mean effect size of the test statistics
-#' @param m totoal number of hypothesis test
-#' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test
-#' @param delInterval interval between the \code{delta} values of a sequence. Note that,
-#' \code{delta} is a LaGrange multiplier, necessary to normalize the weight
-#' @param ranksProb probability of the tests given the effect size
+#' @param alpha Numeric, significance level of the hypothesis test
+#' @param et Numeric, mean effect size of the test statistics
+#' @param m Integer, totoal number of hypothesis test
+#' @param tail Integer (1 or 2), right-tailed or two-tailed hypothesis test.
+#' default is right-tailed test.
+#' @param delInterval Numeric, interval between the \code{delta} values of a
+#' sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
+#' normalize the weight
+#' @param ranksProb Numeric vector of ranks probability of the tests given
+#' the effect size
 #'
 #' @details
 #' If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: \epsilon_i > 0,}
@@ -17,11 +20,16 @@
 #' effect sizes.
 #'
 #' @author Mohamad S. Hasan and Paul Schliekelman
+#'
 #' @export
+#'
 #' @import OPWeight prob_rank_givenEffect
+#'
 #' @seealso \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
 #'
-#' @return \code{weight} normalized weight of the tests for the continuous case
+#' @return \code{weight} Numeric vector of normalized weight of the tests
+#' for the continuous case
+#'
 #' @examples
 #'
 #' # compute the probabilities of the ranks of a test being rank 1 to 100 if the

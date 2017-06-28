@@ -3,10 +3,15 @@
 knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
 
 ## ----loadlibs, message=FALSE, warning=FALSE------------------------------
+# install OPWeight package
+source("https://bioconductor.org/biocLite.R")
+biocLite("OPWeight")
+
+# load packages
+library("OPWeight")
 library("ggplot2")
 library("airway")
 library("DESeq2")
-library(gridExtra)
 library(cowplot)
 library(tibble)
 library(qvalue)
@@ -30,7 +35,6 @@ colnames(de_res_air)
 dim(de_res_air)
 
 ## ----loadOPWeight, message=FALSE, warning=FALSE--------------------------
-library("OPWeight")
 filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
 set.seed(123)
 opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, 

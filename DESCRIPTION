@@ -1,7 +1,7 @@
 Package: OPWeight
 Type: Package
-Title: Optimal Pvalue Weighting
-Version: 0.99.9
+Title: Optimal p-value weighting with independent information
+Version: 1.0.0
 Date: 2017-02-26
 Authors@R: c(person("Mohamad", "Hasan", email = "shakilmohamad7@gmail.com",
                   role = c("aut", "cre")),
@@ -13,13 +13,13 @@ Description: This package perform weighted-pvalue based multiple hypothesis test
     corresponding test effect size.
 Depends: 
     R (>= 3.4.0),
-    qvalue,
-    MASS,
-    tibble
 License: Artistic-2.0
 LazyData: true
 Imports:
     graphics,
+    qvalue,
+    MASS,
+    tibble,
     stats,
 Suggests:
     airway,

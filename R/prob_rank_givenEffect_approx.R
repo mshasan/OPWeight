@@ -3,13 +3,13 @@
 #' @description A normal approximation to comnpute the probability of rank of a
 #' test being higher than any other test given the effect size from external
 #' information.
-#' @param k rank of a test
-#' @param et effect of the targeted test for importance sampling
-#' @param ey mean/median filter efffect from external information
-#' @param nrep number of replications for importance sampling
-#' @param m0 number of true null hypothesis
-#' @param m1 number of true alternative hypothesis
-#' @param effectType type of effect sizes, c("binary","continuous")
+#' @param k Integer, rank of a test
+#' @param et Numeric, effect of the targeted test for importance sampling
+#' @param ey Numeric, mean/median filter efffect from external information
+#' @param nrep Integer, number of replications for importance sampling
+#' @param m0 Integer, number of true null hypothesis
+#' @param m1 Integer, number of true alternative hypothesis
+#' @param effectType Character ("continuous" or "binary"), type of effect sizes
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
 #' then \code{ey} should be mean of the filter effect sizes,
@@ -24,12 +24,16 @@
 #' a bioconductor package \code{qvalue}.
 #'
 #' @author Mohamad S. Hasan and Paul Schliekelman
+#'
 #' @export
+#'
 #' @import stats
+#'
 #' @seealso \code{\link{dnorm}} \code{\link{pnorm}} \code{\link{rnorm}}
 #' \code{\link{qvalue}}
 #'
-#' @return \code{prob} probability of the rank of a test
+#' @return \code{prob} Numeric, probability of the rank of a test
+#'
 #' @examples
 #' # compute the probability of the rank of a test being third if all tests are
 #' # from the true null

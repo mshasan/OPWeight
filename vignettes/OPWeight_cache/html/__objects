@@ -1,21 +1,14 @@
 loadlibs	
+dataProcessing	dds	de_res_air	airway
 colnames_de_res_air	
-loadihw	opw_results
-unnamed-chunk-1	opw_results2
-unnamed-chunk-2	
-unnamed-chunk-3	
-unnamed-chunk-4	dat	m	p_prob	p_weight	probs	ranks	weights
-unnamed-chunk-5	barlines	Data	hist_filter	hist_pval	p_ecdf	pval_filter
-unnamed-chunk-6	bc	lambda	m	m0	m1	mean_filterEffect	mean_testEffect	model	null	test_effect
 loadOPWeight	filters	opw_results
 outputsName	
 nullProp	
 no.OfRejections	
-pronVsWeight	dat	m	p_prob	p_weight	probs	ranks	weights
+probVsWeight	dat	m	p_prob	p_weight	probs	testRanks	weights
 sumPlots	Data	barlines	hist_filter	hist_pval	p	p_ecdf	pval_filter	title
 dataAnalysis	Data	OD	Ordered.pvalue	bc	filters	lambda	m	m0	m1	mean_filterEffect	mean_testEffect	model	nullProp	pvals	test_effect	tests
-probVsWeight	dat	m	p_prob	p_weight	probs	testRanks	weights
-dataProcessing	dds	de_res_air	airway
 ranksProb	prob_cont
 weights	wgt
 results	alpha	n_rejections	padj	rejections_list
+unnamed-chunk-1	opw_results2

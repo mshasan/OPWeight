@@ -8,21 +8,23 @@ weight_by_delta(delta, alpha = 0.05, et, m, m1, tail = 1L, ranksProb,
   effectType = c("continuous", "binary"))
 }
 \arguments{
-\item{delta}{value of the LagRange multiplier}
+\item{delta}{Numeric value of the LagRange multiplier}
 
-\item{alpha}{significance level of the hypothesis test}
+\item{alpha}{Numeric, significance level of the hypothesis test}
 
-\item{et}{mean effect size of the test statistics}
+\item{et}{Numeric, mean effect size of the test statistics}
 
-\item{m}{totoal number of hypothesis test}
+\item{m}{Integer, totoal number of hypothesis test}
 
-\item{m1}{number of true alternative tests}
+\item{m1}{Integer, number of true alternative tests}
 
-\item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test}
+\item{tail}{Integer (1 or 2), right-tailed or two-tailed hypothesis test.
+default is right-tailed test.}
 
-\item{ranksProb}{probability of the filter statistics given the effect size}
+\item{ranksProb}{Numeric vector of the ranks probability of the filter
+statistics given the effect size}
 
-\item{effectType}{type of effect sizes; c("continuous", "binary")}
+\item{effectType}{Character ("continuous" or "binary"), type of effect sizes}
 }
 \value{
 \code{sumWeight_per_delta} sum of weights per delta value

@@ -10,49 +10,55 @@ opw(pvalue, filter, weight = NULL, ranksProb = NULL,
   tail = 1L, delInterval = 1e-04, method = c("BH", "BON"), ...)
 }
 \arguments{
-\item{pvalue}{a vector of pvalues of the test statistics}
+\item{pvalue}{Numeric vector of pvalues of the test statistics}
 
-\item{filter}{a vector of filter statistics}
+\item{filter}{Numeric vector of filter statistics}
 
-\item{weight}{optional weight vector not required}
+\item{weight}{An optional numeric weight vector not required}
 
-\item{ranksProb}{probabilities of the ranks of the filters given the mean effect}
+\item{ranksProb}{An optional numeric vector of the ranks probability of the
+filters given the mean effect}
 
-\item{mean_filterEffect}{mean filter effect of the true alternatives}
+\item{mean_filterEffect}{Numeric, value of the mean filter effect
+of the true alternatives}
 
-\item{mean_testEffect}{mean test effect of the true alterantives}
+\item{mean_testEffect}{Numeric, value of the mean test effect
+of the true alterantives}
 
-\item{effectType}{type of effect sizes; c("continuous", "binary")}
+\item{effectType}{Character ("continuous" or "binary"), type of effect sizes}
 
-\item{alpha}{significance level of the hypothesis test}
+\item{alpha}{Numeric, significance level of the hypothesis test}
 
-\item{nrep}{number of replications for importance sampling, default value is
-10,000, can be increased to obtain smoother probability curves}
+\item{nrep}{Integer, number of replications for importance sampling, default
+value is 10,000, can be increased to obtain smoother probability curves}
 
-\item{tail}{right-tailed or two-tailed hypothesis test. default is right-tailed test.}
+\item{tail}{Integer (1 or 2), right-tailed or two-tailed hypothesis test.
+default is right-tailed test.}
 
-\item{delInterval}{interval between the \code{delta} values of a sequence.
-Note that, \code{delta} is a LaGrange multiplier, necessary to normalize the weight}
+\item{delInterval}{Numeric, interval between the \code{delta} values of a
+sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
+normalize the weight}
 
-\item{method}{type of methods is used to obtain the results; c("BH", "BON"),
-Benjemini-Hochberg or Bonferroni}
+\item{method}{Character ("BH" or "BON"), type of methods is used to obtain
+the results; Benjemini-Hochberg or Bonferroni}
 
 \item{...}{Arguments passed to internal functions}
 }
 \value{
-\code{totalTests} total number of hypothesis tests evaluated
+\code{totalTests} Integer, total number of hypothesis tests evaluated
 
-\code{nullProp} estimated propotion of the true null hypothesis
+\code{nullProp} Numeric, estimated propotion of the true null
+hypothesis
 
-\code{ranksProb} probability of the ranks given the mean filter effect,
-p(rank | ey = mean_filterEffect)
+\code{ranksProb} Numeric vector of ranks probability given the
+mean filter effect, p(rank | ey = mean_filterEffect)
 
-\code{weight} normalized weight
+\code{weight} Numeric vector of normalized weight
 
-\code{rejections} total number of rejections
+\code{rejections} Integer, total number of rejections
 
-\code{rejections_list} list of rejected pvalues and the corresponding
-filter statistics
+\code{rejections_list} data frame, list of rejected pvalues and the
+corresponding filter statistics
 }
 \description{
 A function to perform weighted pvalue multiple hypothesis test.

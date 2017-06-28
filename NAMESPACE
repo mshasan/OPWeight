@@ -6,7 +6,9 @@ export(prob_rank_givenEffect_simu)
 export(weight_binary)
 export(weight_by_delta)
 export(weight_continuous)
+
 import(stats)
+
 importFrom(graphics, hist)
 importFrom(MASS, boxcox)
 importFrom(qvalue, qvalue)

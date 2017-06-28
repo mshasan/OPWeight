@@ -1,14 +1,17 @@
 #' @title Find sum of weights for the LaGrange multiplier
 #'
 #' @description Compute sum of weights for a given value of the LaGrange multiplier
-#' @param delta value of the LagRange multiplier
-#' @param alpha significance level of the hypothesis test
-#' @param et mean effect size of the test statistics
-#' @param m totoal number of hypothesis test
-#' @param m1 number of true alternative tests
-#' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test
-#' @param ranksProb probability of the filter statistics given the effect size
-#' @param effectType type of effect sizes; c("continuous", "binary")
+#'
+#' @param delta Numeric value of the LagRange multiplier
+#' @param alpha Numeric, significance level of the hypothesis test
+#' @param et Numeric, mean effect size of the test statistics
+#' @param m Integer, totoal number of hypothesis test
+#' @param m1 Integer, number of true alternative tests
+#' @param tail Integer (1 or 2), right-tailed or two-tailed hypothesis test.
+#' default is right-tailed test.
+#' @param ranksProb Numeric vector of the ranks probability of the filter
+#' statistics given the effect size
+#' @param effectType Character ("continuous" or "binary"), type of effect sizes
 #'
 #' @details
 #' To obtain the normalized weight, and to make sure that the sum of the weights is
@@ -17,9 +20,11 @@
 #' value of the LaGrange multiplier and provide the sum of the weights in return.
 #'
 #' @author Mohamad S. Hasan and Paul Schliekelman
+#'
 #' @export
 #'
 #' @return \code{sumWeight_per_delta} sum of weights per delta value
+#'
 #' @examples
 #'
 #' # generate a sequence of delta

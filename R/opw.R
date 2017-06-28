@@ -7,21 +7,26 @@
 #' hypothesis and the list of the rejected pvalues as well as the corresponing
 #' filter statistics.
 #'
-#' @param pvalue a vector of pvalues of the test statistics
-#' @param filter a vector of filter statistics
-#' @param weight optional weight vector not required
-#' @param ranksProb probabilities of the ranks of the filters given the mean effect
-#' @param mean_filterEffect mean filter effect of the true alternatives
-#' @param mean_testEffect mean test effect of the true alterantives
-#' @param effectType type of effect sizes; c("continuous", "binary")
-#' @param alpha significance level of the hypothesis test
-#' @param nrep number of replications for importance sampling, default value is
-#' 10,000, can be increased to obtain smoother probability curves
-#' @param tail right-tailed or two-tailed hypothesis test. default is right-tailed test.
-#' @param delInterval interval between the \code{delta} values of a sequence.
-#' Note that, \code{delta} is a LaGrange multiplier, necessary to normalize the weight
-#' @param method type of methods is used to obtain the results; c("BH", "BON"),
-#' Benjemini-Hochberg or Bonferroni
+#' @param pvalue Numeric vector of pvalues of the test statistics
+#' @param filter Numeric vector of filter statistics
+#' @param weight An optional numeric weight vector not required
+#' @param ranksProb An optional numeric vector of the ranks probability of the
+#' filters given the mean effect
+#' @param mean_filterEffect Numeric, value of the mean filter effect
+#' of the true alternatives
+#' @param mean_testEffect Numeric, value of the mean test effect
+#' of the true alterantives
+#' @param effectType Character ("continuous" or "binary"), type of effect sizes
+#' @param alpha Numeric, significance level of the hypothesis test
+#' @param nrep Integer, number of replications for importance sampling, default
+#' value is 10,000, can be increased to obtain smoother probability curves
+#' @param tail Integer (1 or 2), right-tailed or two-tailed hypothesis test.
+#' default is right-tailed test.
+#' @param delInterval Numeric, interval between the \code{delta} values of a
+#' sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
+#' normalize the weight
+#' @param method Character ("BH" or "BON"), type of methods is used to obtain
+#' the results; Benjemini-Hochberg or Bonferroni
 #' @param ... Arguments passed to internal functions
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
@@ -75,14 +80,15 @@
 #' \code{\link{weight_continuous}} \code{\link{qvalue}} \code{\link{dnorm}}
 #'
 #'
-#' @return \code{totalTests} total number of hypothesis tests evaluated
-#' @return \code{nullProp} estimated propotion of the true null hypothesis
-#' @return \code{ranksProb} probability of the ranks given the mean filter effect,
-#' p(rank | ey = mean_filterEffect)
-#' @return \code{weight} normalized weight
-#' @return \code{rejections} total number of rejections
-#' @return \code{rejections_list} list of rejected pvalues and the corresponding
-#' filter statistics
+#' @return \code{totalTests} Integer, total number of hypothesis tests evaluated
+#' @return \code{nullProp} Numeric, estimated propotion of the true null
+#' hypothesis
+#' @return \code{ranksProb} Numeric vector of ranks probability given the
+#' mean filter effect, p(rank | ey = mean_filterEffect)
+#' @return \code{weight} Numeric vector of normalized weight
+#' @return \code{rejections} Integer, total number of rejections
+#' @return \code{rejections_list} data frame, list of rejected pvalues and the
+#' corresponding filter statistics
 #'
 #'
 #' @examples

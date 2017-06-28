@@ -11,19 +11,19 @@ prob_rank_givenEffect_simu(s, ey, e.one, m0, m1, effectType = c("binary",
 \item{s}{number of samples of test statistics composed of null and alternative
 tests}
 
-\item{ey}{filter test efffect from the external information}
+\item{ey}{Numeric, filter test efffect from the external information}
 
-\item{e.one}{one test effect that will vary across all tests}
+\item{e.one}{Numeric, one test effect that will vary across all tests}
 
-\item{m0}{number of true null hypothesis}
+\item{m0}{Integer, number of true null hypothesis}
 
-\item{m1}{number of true alternative hypothesis}
+\item{m1}{Integer, number of true alternative hypothesis}
 
-\item{effectType}{type of effect sizes, c("binary","continuous")}
+\item{effectType}{Character ("continuous" or "binary"), type of effect sizes}
 }
 \value{
-\code{r0} rank of the null test statistic\cr
-        \code{r1} rank of the alternative test statistic
+\code{r0} Integer, rank of the null test statistic\cr
+        \code{r1} Integer, rank of the alternative test statistic
 }
 \description{
 A simulation approach to comnpute the probability of rank of a

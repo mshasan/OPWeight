@@ -7,20 +7,20 @@
 prob_rank_givenEffect(k, et, ey, nrep = 10000, m0, m1)
 }
 \arguments{
-\item{k}{rank of a test}
+\item{k}{Integer, rank of a test}
 
-\item{et}{effect of the targeted test for importance sampling}
+\item{et}{Numeric, effect of the targeted test for importance sampling}
 
-\item{ey}{mean filter efffect from external information}
+\item{ey}{Numeric, mean filter efffect from the external information}
 
-\item{nrep}{number of replications for importance sampling}
+\item{nrep}{Integer, number of replications for importance sampling}
 
-\item{m0}{number of true null hypothesis}
+\item{m0}{Integer, number of true null hypothesis}
 
-\item{m1}{number of true alternative hypothesis}
+\item{m1}{Integer, number of true alternative hypothesis}
 }
 \value{
-\code{prob} probability of the rank of a test
+\code{prob} Numeric, probability of the rank of a test
 }
 \description{
 Comnpute the probability of rank of a

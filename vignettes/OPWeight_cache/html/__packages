@@ -1,5 +1,7 @@
 base
+OPWeight
 BiocStyle
+BiocInstaller
 ggplot2
 BiocGenerics
 S4Vectors
@@ -12,9 +14,7 @@ DelayedArray
 SummarizedExperiment
 airway
 DESeq2
-gridExtra
 cowplot
 tibble
 qvalue
 MASS
-OPWeight

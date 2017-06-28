@@ -8,22 +8,22 @@ prob_rank_givenEffect_approx(k, et, ey, nrep = 10000, m0, m1,
   effectType = c("binary", "continuous"))
 }
 \arguments{
-\item{k}{rank of a test}
+\item{k}{Integer, rank of a test}
 
-\item{et}{effect of the targeted test for importance sampling}
+\item{et}{Numeric, effect of the targeted test for importance sampling}
 
-\item{ey}{mean/median filter efffect from external information}
+\item{ey}{Numeric, mean/median filter efffect from external information}
 
-\item{nrep}{number of replications for importance sampling}
+\item{nrep}{Integer, number of replications for importance sampling}
 
-\item{m0}{number of true null hypothesis}
+\item{m0}{Integer, number of true null hypothesis}
 
-\item{m1}{number of true alternative hypothesis}
+\item{m1}{Integer, number of true alternative hypothesis}
 
-\item{effectType}{type of effect sizes, c("binary","continuous")}
+\item{effectType}{Character ("continuous" or "binary"), type of effect sizes}
 }
 \value{
-\code{prob} probability of the rank of a test
+\code{prob} Numeric, probability of the rank of a test
 }
 \description{
 A normal approximation to comnpute the probability of rank of a
