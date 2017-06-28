@@ -1,7 +1,7 @@
 Package: OPWeight
 Type: Package
 Title: Optimal p-value weighting with independent information
-Version: 0.99.10
+Version: 0.99.11
 Date: 2017-02-26
 Authors@R: c(person("Mohamad", "Hasan", email = "shakilmohamad7@gmail.com",
                   role = c("aut", "cre")),
