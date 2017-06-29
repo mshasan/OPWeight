@@ -63,5 +63,5 @@ plot(ranks, weight_bin)
 \code{\link{qvalue}}
 }
 \author{
-Mohamad S. Hasan, mshasan@uga.edu
+Mohamad S. Hasan, shakilmohamad7@gmail.com
 }

@@ -53,5 +53,5 @@ weightSum_by_delta <- sapply(delta, weight_by_delta, m = 100, m1 = 50, et = 2,
 
 }
 \author{
-Mohamad S. Hasan and Paul Schliekelman
+Mohamad S. Hasan, shakilmohamad7@gmail.com
 }

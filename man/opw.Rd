@@ -150,5 +150,5 @@ results4 <- opw(pvalue = pvals, filter = filters, weight = wgt,
 \code{\link{weight_continuous}} \code{\link{qvalue}} \code{\link{dnorm}}
 }
 \author{
-Mohamad S. Hasan and Paul Schliekelman
+Mohamad S. Hasan, shakilmohamad7@gmail.com
 }

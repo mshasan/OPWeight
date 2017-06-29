@@ -85,5 +85,5 @@ matplot(1:m, cbind(prob0, prob1), type = "l")
 \code{\link{runif}} \code{\link{rnorm}} \code{\link{qvalue}}
 }
 \author{
-Mohamad S. Hasan and Paul Schliekelman
+Mohamad S. Hasan, shakilmohamad7@gmail.com
 }

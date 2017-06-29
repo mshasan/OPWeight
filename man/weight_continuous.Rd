@@ -60,5 +60,5 @@ plot(ranks, weight_cont)
 \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
 }
 \author{
-Mohamad S. Hasan and Paul Schliekelman
+Mohamad S. Hasan, shakilmohamad7@gmail.com
 }

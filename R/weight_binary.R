@@ -22,7 +22,7 @@
 #' the Binary effect sizes. \code{m1} can be estimated using \code{qvalue} from
 #' a bioconductor package \code{qvalue}.
 #'
-#' @author Mohamad S. Hasan, mshasan@uga.edu
+#' @author Mohamad S. Hasan, shakilmohamad7@gmail.com
 #'
 #' @export
 #'

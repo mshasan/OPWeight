@@ -159,17 +159,16 @@ There are many ways to obtain the mean of the test effects, `mean_testEffect`, a
 
 Before applying the methods, perform a pre-screening analysis of the data set. Consider the above data set. First make some plots based on the filter statistics, and the p-values.
 
-```{r sumPlots}
+```{r summaryPlots}
 Data <- tibble(pval=de_res_air$pvalue, filter=de_res_air$baseMean)
 
-barlines <- "#1F3552"
 
 hist_pval <- ggplot(Data, aes(x = Data$pval)) +
-        geom_histogram(colour = barlines, fill = "#4281AE")+
+        geom_histogram(colour = "#1F3552", fill = "#4281AE")+
 		labs(x = "P-values")
 
 hist_filter <- ggplot(Data, aes(x = Data$filter)) +
-        geom_histogram( colour = barlines, fill = "#4274AE") +
+        geom_histogram( colour = "#1F3552", fill = "#4274AE")+
 		labs(x = "Filter statistics")
         
 pval_filter <- ggplot(Data, aes(x = rank(-Data$filter), y = -log10(pval))) +

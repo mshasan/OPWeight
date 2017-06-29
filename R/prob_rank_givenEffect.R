@@ -25,7 +25,7 @@
 #' \code{m1} and \code{m0} can be estimated using \code{qvalue} from
 #' a bioconductor package \code{qvalue}.
 #'
-#' @author Mohamad S. Hasan and Paul Schliekelman
+#' @author Mohamad S. Hasan, shakilmohamad7@gmail.com
 #'
 #' @export
 #'

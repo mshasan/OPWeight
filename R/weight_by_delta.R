@@ -19,7 +19,7 @@
 #' LaGrange multiplier \code{delta} needed. This function will compute the weights for a given
 #' value of the LaGrange multiplier and provide the sum of the weights in return.
 #'
-#' @author Mohamad S. Hasan and Paul Schliekelman
+#' @author Mohamad S. Hasan, shakilmohamad7@gmail.com
 #'
 #' @export
 #'

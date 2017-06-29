@@ -68,7 +68,7 @@
 #' are not provided then the missing mean effect will be computed internally.
 #'
 #'
-#' @author Mohamad S. Hasan and Paul Schliekelman
+#' @author Mohamad S. Hasan, shakilmohamad7@gmail.com
 #'
 #' @export
 #'

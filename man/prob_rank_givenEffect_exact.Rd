@@ -64,5 +64,5 @@ plot(ranks, prob)
 \code{\link{qvalue}}
 }
 \author{
-Mohamad S. Hasan and Paul Schliekelman
+Mohamad S. Hasan, shakilmohamad7@gmail.com
 }

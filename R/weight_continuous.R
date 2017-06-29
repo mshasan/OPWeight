@@ -19,7 +19,7 @@
 #' effect sizes, respectively. This is called hypothesis testing for the continuous
 #' effect sizes.
 #'
-#' @author Mohamad S. Hasan and Paul Schliekelman
+#' @author Mohamad S. Hasan, shakilmohamad7@gmail.com
 #'
 #' @export
 #'
