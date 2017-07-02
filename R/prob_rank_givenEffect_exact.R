@@ -53,16 +53,6 @@
 # function to compute p(rank=k|filterEffect=ey) by exact method
 #---------------------------------------------------------------
 # we used only uniform effects for continuous case.
-
-# Input:-----
-# k rank of a test
-# et effect of the targeted test for importance sampling
-# ey mean filter efffect from external information
-# nrep = number of replications for importance sampling
-# m0 = number of true null hypothesis
-# m1 = number of true alternative hypothesis
-# effectType = type of effect size c("binary","continuous")
-
 # internal parameters:-----
 # k0 = ranks under null model
 # fun.k0 = input=null rank; output=prob of specific combo of r0 and r1
@@ -74,10 +64,6 @@
 # el = vector of uniform effect sizes
 # p1 = prob of alt test having higher test stat value than t
 # E.T = does importance sampling for the integration over t
-
-# output:-----
-# prob = p(rank = k | effect = ey)
-# prob is obtained by summing all possible combinations of k0 + k1 = k + 1
 #===============================================================================
 prob_rank_givenEffect_exact <- function(k, et, ey, nrep = 10000, m0, m1,
                                         effectType = c("binary", "continuous"))

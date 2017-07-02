@@ -39,28 +39,11 @@
 #'                             ranksProb = probs, effectType = "continuous")
 #'
 #===============================================================================
-# function to compute weight from p(rank=k|filterEffect=ey)
-#------------------------------------------------
-# Input:-----
-# delta = value of the LagRange multiplier
-# alpha = significance level of the hypothesis test
-# et = mean effect size of the test statistics
-# m = totoal number of hypothesis test
-# m1 = number of true alternative tests
-# tail = right-tailed or two-tailed hypothesis test. default is right-tailed test
-# ranksProb = probability of the filter statistics given the effect size
-# effectType = type of effect sizes; c("continuous", "binary")
-
-# internal parameters:-----
-# weight_per_delta = weight vector per delta value
-
-# output:-----
-# sumWeight_per_delta = sum of weights per delta value
-#===============================================================================
-
 # function to compute weight for delta, the lagrange constant
 #---------------------------------------------------------------
-
+# internal parameters:-----
+# weight_per_delta = weight vector per delta value
+#===============================================================================
 weight_by_delta <- function(delta, alpha = .05, et, m, m1, tail = 1L, ranksProb,
                             effectType = c("continuous", "binary"))
     {

@@ -51,29 +51,14 @@
 #===============================================================================
 # function to compute weight from p(rank=k|filterEffect=ey)
 #-----------------------------------------------------
-
-# Input:-----
-# alpha = significance level of the hypotheis test
-# et = mean effect size of the test statistics
-# m = totoal number of hypothesis test
-# tail = one-tailed or two-tailed hypothesis test
-# delInterval =  interval between the delta values of a sequesnce
-# ranksProb = probability of the tests given the effect size
-
 # internal parameters:-----
 # delta = sequene of delta (lagrange multiplier) values
 # findDelta = function to compute sum of weight for each dleta
 # deltaOut = optimal delta value
 # sumWeight = sum of the weights
 # normWeight = normalized weight when necessary
-
-
-# output:-----
-# # Weight.out = weight without normalization
 #===============================================================================
 
-# function to compute weight continuous case
-#--------------------------------------
 weight_continuous <- function(alpha, et, m, tail = 1L, delInterval = .0001, ranksProb)
 {
     prob <- ranksProb/sum(ranksProb, na.rm = TRUE)

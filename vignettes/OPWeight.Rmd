@@ -14,7 +14,6 @@ vignette: >
 
 
 ```{r setup, echo = FALSE}
-#knitr::opts_chunk$set(fig.width = 8, fig.height = 8)
 knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
 ```
 
@@ -66,13 +65,6 @@ data("airway", package = "airway")
 dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
 dds <- DESeq(dds)
 de_res_air <- results(dds)
-# m = 1000
-# set.seed(3)
-# baseMean = runif(m, min = 0, max = 2.5)          # filter statistics
-# H = rbinom(m, size = 1, prob = 0.1)             # hypothesis true or false
-# stat = rnorm(m, mean = H * baseMean)            # Z-score
-# pvalue = 1 - pnorm(stat)
-# de_res_air = tibble(baseMean, stat, pvalue)
 ```
 
 The output is a `r class(de_res_air)` object containing the following columns for each gene in which each gene corresponds to a hypothesis test:
@@ -223,9 +215,6 @@ bc <- boxcox(filters ~ tests)
 lambda <- bc$x[which.max(bc$y)]; lambda
 model <- lm(filters^lambda ~ tests)
 
-# If lambda = 0. use log-transformation
-# model <- lm(log(Data$filters) ~ Data$tests)
-
 # etimated test efects of the true altrnatives------------
 test_effect = if(m1 == 0) {0
 } else {sort(tests, decreasing = TRUE)[1:m1]}		# two-tailed test
@@ -235,12 +224,6 @@ mean_testEffect = mean(test_effect, na.rm = TRUE)
 mean_testEffect
 mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
 mean_filterEffect
-
-# # for the binary effects estiamted median effects 
-# mean_testEffect = median(test_effect, na.rm = TRUE)
-# mean_testEffect
-# mean_filterEffect = model$coef[[1]] + model$coef[[2]]*mean_testEffect
-# mean_filterEffect
 ```            
 In order to obtain the mean effects, we compute the predicted value of the filter statistics corresponding to the mean or median of the test statistics. The mean or median value of the test statistics is then used as the estimated `mean_testEffect` and the corresponding predicted value of the filter statistics is used as the estimated `mean_filterEffect`.
 

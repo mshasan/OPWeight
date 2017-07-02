@@ -75,15 +75,6 @@
 # function to compute p(rank=k|filterEffect=ey) by simulation
 #--------------------------------------------------------------
 # we used only uniform effects for continuous case.
-
-# Input:-----
-# s = number samples of test statistics composed of null and alternative tests
-# ey = filter test efffect from the external information
-# e.one one test effect that will vary across all tests
-# m0 = number of true null hypothesis
-# m1 = number of true alternative hypothesis
-# effectType = type of effect size c("binary","continuous")
-
 # internal parameters:-----
 # m = total number of test
 # ey0 = vector of effects of the null tests
@@ -91,9 +82,6 @@
 # t01 = generate test statistics
 # r0 = rank of the null test statistic
 # r1 = rank of the alternative test statistic
-
-# output:-----
-# rank = pair of null and alternative test rank
 #===============================================================================
 prob_rank_givenEffect_simu <- function(s, ey, e.one, m0, m1,
                                     effectType = c("binary", "continuous"))

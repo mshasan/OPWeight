@@ -54,24 +54,12 @@
 #===============================================================================
 # function to compute p(rank=k|filterEffect=ey) by normal approximation
 #---------------------------------------------------
-
-# Input:-----
-# k rank of a test
-# et effect of the targeted test for importance sampling
-# ey mean filter efffect from external information
-# nrep = number of replications for importance sampling
-# m0 = number of true null hypothesis
-# m1 = number of true alternative hypothesis
-
 # internal parameters:-----
 # m = total number of tests
 # t = generate test statistics for target test with effect size et
 # p0 = prob of null test having higher test stat value than t
 # p1 = prob of alt test having higher test stat value than t
 # pb = monitor progress bar
-
-# output:-----
-# prob = p(rank=k|effect=ey)
 #===============================================================================
 prob_rank_givenEffect <- function(k, et, ey, nrep = 10000, m0, m1)
 	{

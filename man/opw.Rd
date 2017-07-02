@@ -57,8 +57,8 @@ mean filter effect, p(rank | ey = mean_filterEffect)
 
 \code{rejections} Integer, total number of rejections
 
-\code{rejections_list} data frame, list of rejected pvalues and the
-corresponding filter statistics
+\code{rejections_list} data frame, list of rejected p-values and the
+corresponding filter statistics and the adjusted p-values if method = "BH" used.
 }
 \description{
 A function to perform weighted pvalue multiple hypothesis test.

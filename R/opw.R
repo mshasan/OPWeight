@@ -87,8 +87,8 @@
 #' mean filter effect, p(rank | ey = mean_filterEffect)
 #' @return \code{weight} Numeric vector of normalized weight
 #' @return \code{rejections} Integer, total number of rejections
-#' @return \code{rejections_list} data frame, list of rejected pvalues and the
-#' corresponding filter statistics
+#' @return \code{rejections_list} data frame, list of rejected p-values and the
+#' corresponding filter statistics and the adjusted p-values if method = "BH" used.
 #'
 #'
 #' @examples
@@ -131,21 +131,6 @@
 #===============================================================================
 # # function to apply opw methods on data
 #---------------------------------------------------
-# Input:
-#----------------------------
-# pvalue = vector of pvalues
-# filter = vector of filter statistics
-# ranksProb = the probabilities of the filters or filters' ranks given
-# the mean of the filter effects
-# mean_filterEffect = filter effect size
-# mean_testEffect = test effect size
-# effectType = type of effect size c("binary","continuous")
-# alpha = significance level of the hypotheis test
-# nrep = number of replications for importance sampling
-# tail = right-tailed or two-tailed hypothesis test. default is two-tailed test
-# delInterval = interval between the delta values of a sequence
-# method = Benjamini_HOchberg (BH) or Bonferroni (BON)
-
 # internal parameters:-----
 # m = number of hypothesis test
 # nullProp = proportion of true null hypothesis
@@ -161,17 +146,7 @@
 # OD = odered by covariate
 # odered.pvalues = odered pvalues for all tests
 # padj = adjusted pvalues for FDR uses
-
-# Output:
-#-------------------------
-# totalTests = total number of hypothesis tests
-# nullProp = estimated propotion of the true null hypothesis
-# ranksProb = probability of the ranks given the mean filter effect,
-#                                           p(rank | ey = mean_filterEffet)
-# weight = normalized weight
-# rejections = total number of rejections
-# rejections_list = list of rejected pvalues and corresponding filter statistics
-#-------------------------------------------------------------------------------
+#===============================================================================
 
 opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffect = NULL,
                 mean_testEffect = NULL, effectType = c("continuous", "binary"),
@@ -268,6 +243,7 @@ opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffe
         message("comparing pvalues with thresholds")
         if(method == "BH"){
             padj <- p.adjust(Ordered.pvalue/wgt, method = "BH")
+            OD <- add_column(OD, padj)
             rejections_list = OD[which((padj <= alpha) == TRUE), ]
         } else {
             rejections_list = OD[which((Ordered.pvalue <= alpha*wgt/m) == TRUE), ]

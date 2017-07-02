@@ -52,16 +52,6 @@
 # function to compute p(rank=k|filterEffect=ey) by normal approximation
 #------------------------------------------------------------------------
 # we used only uniform effects for continuous case.
-
-# Input:-----
-# k rank of a test
-# et effect of the targeted test for importance sampling
-# ey mean filter efffect from external information
-# nrep = number of replications for importance sampling
-# m0 = number of true null hypothesis
-# m1 = number of true alternative hypothesis
-# effectType = type of effect size c("binary","continuous")
-
 # internal parameters:-----
 # t = generate test statistics for target test with effect size et
 # p0 = prob of null test having higher test stat value than t
@@ -70,9 +60,6 @@
 # b = upper limit of the uniform distribution
 # el = vector of uniform effect sizes
 # p1 = prob of alt test having higher test stat value than t
-
-# output:-----
-# prob = p(rank=k|effect=ey)
 #===============================================================================
 prob_rank_givenEffect_approx <- function(k, et, ey, nrep = 10000, m0, m1,
                                   effectType = c("binary", "continuous"))

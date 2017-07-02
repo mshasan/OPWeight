@@ -13,5 +13,6 @@ importFrom(graphics, hist)
 importFrom(MASS, boxcox)
 importFrom(qvalue, qvalue)
 importFrom(tibble, tibble)
+importFrom(tibble, add_column)
 
 
