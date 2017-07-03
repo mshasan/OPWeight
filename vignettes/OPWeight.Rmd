@@ -45,7 +45,7 @@ Load required libraries
 ```{r loadlibs, message=FALSE, warning=FALSE}
 # install OPWeight package
 source("https://bioconductor.org/biocLite.R")
-biocLite("OPWeight")
+biocLite("OPWeight", suppressUpdates=TRUE)
 
 # load packages
 library("OPWeight")
