@@ -1,6 +1,10 @@
 {
-    "path" : "C:/Users/mshasan/Dropbox/My R packages/OPWeight",
+    "path" : "~",
     "sortOrder" : [
+        {
+            "ascending" : false,
+            "columnIndex" : 3
+        },
         {
             "ascending" : true,
             "columnIndex" : 2

@@ -14,7 +14,7 @@ vignette: >
 
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(tidy = FALSE, cache = TRUE, autodep = TRUE)
+knitr::opts_chunk$set(tidy = FALSE, cache = FALSE, autodep = TRUE)
 ```
 
 # Introduction
