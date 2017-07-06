@@ -72,7 +72,7 @@ weight_binary <- function(alpha, et, m, m1, tail = 1L, delInterval = .0001, rank
                            effectType = "binary")
 
     deltaOut <- delta[min(abs(weightSumVec - m)) == abs(weightSumVec - m)]
-    deltaOut <- ifelse(length(deltaOut) > 1, .0001, deltaOut)
+    deltaOut <- ifelse(length(deltaOut) > 1, deltaOut[1], deltaOut)
     weight.out <- tail*(m/alpha)*pnorm(et/2 + 1/et*log(deltaOut*m/(alpha*m1*prob)),
                                        lower.tail = FALSE)
     sumWeight <- sum(weight.out, na.rm = TRUE)

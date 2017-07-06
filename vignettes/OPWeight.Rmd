@@ -81,7 +81,7 @@ First we will load the proposed package `r Biocpkg("OPWeight")` and then show th
 ```{r loadOPWeight, message=FALSE, warning=FALSE}
 filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
 set.seed(123)
-opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, 
+opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, nrep = 1000,
                    alpha = .1, tail = 2, effectType = "continuous", method = "BH")
 ```
 
@@ -233,12 +233,13 @@ size computed above. Note that, for the ranks probability `et` and `ey` are the 
 ```{r ranksProb}
 set.seed(123)
 prob_cont <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
-                   ey = mean_filterEffect, nrep = 10000, m0 = m0, m1 = m1)
+                   ey = mean_filterEffect, nrep = 1000, m0 = m0, m1 = m1)
 ```
 Then applying the probabilities to compute the weights
 
 ```{r weights}
-wgt <- weight_continuous(alpha = .1, et = mean_testEffect, m = m, ranksProb = prob_cont)
+wgt <- weight_continuous(alpha = .1, et = mean_testEffect, m = m, 
+                         delInterval = .01, ranksProb = prob_cont)
 ```
 Finally, obtain the total number and the list of the significant tests
 
