@@ -4,7 +4,7 @@
 \alias{weight_binary}
 \title{Weight for the Binary effect sizes}
 \usage{
-weight_binary(alpha, et, m, m1, tail = 1L, delInterval = 1e-04, ranksProb)
+weight_binary(alpha, et, m, m1, tail = 1L, delInterval = 0.001, ranksProb)
 }
 \arguments{
 \item{alpha}{Numeric, significance level of the hypothesis test}

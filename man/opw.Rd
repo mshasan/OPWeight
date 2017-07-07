@@ -7,7 +7,7 @@
 opw(pvalue, filter, weight = NULL, ranksProb = NULL,
   mean_filterEffect = NULL, mean_testEffect = NULL,
   effectType = c("continuous", "binary"), alpha = 0.05, nrep = 10000,
-  tail = 1L, delInterval = 1e-04, method = c("BH", "BON"), ...)
+  tail = 1L, delInterval = 0.001, method = c("BH", "BON"), ...)
 }
 \arguments{
 \item{pvalue}{Numeric vector of pvalues of the test statistics}

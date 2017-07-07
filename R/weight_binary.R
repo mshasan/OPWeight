@@ -62,7 +62,7 @@
 # normWeight = normalized weight when necessary
 #===============================================================================
 
-weight_binary <- function(alpha, et, m, m1, tail = 1L, delInterval = .0001, ranksProb)
+weight_binary <- function(alpha, et, m, m1, tail = 1L, delInterval = .001, ranksProb)
 {
     prob <- ranksProb/sum(ranksProb, na.rm = TRUE)
     delta <- seq(0, 1, delInterval)

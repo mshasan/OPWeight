@@ -29,6 +29,7 @@ dim(de_res_air)
 ## ----loadOPWeight, message=FALSE, warning=FALSE--------------------------
 filters = de_res_air$baseMean + .0001  # add a small constant to make all values positive
 set.seed(123)
+# one should use more nrep to obtain more acurate results
 opw_results <- opw(pvalue = de_res_air$pvalue, filter = filters, nrep = 1000,
                    alpha = .1, tail = 2, effectType = "continuous", method = "BH")
 
@@ -122,6 +123,7 @@ prob_cont <- sapply(1:m, prob_rank_givenEffect, et = mean_filterEffect,
                    ey = mean_filterEffect, nrep = 1000, m0 = m0, m1 = m1)
 
 ## ----weights-------------------------------------------------------------
+# delInterval can be smaller to otain the better results
 wgt <- weight_continuous(alpha = .1, et = mean_testEffect, m = m, 
                          delInterval = .01, ranksProb = prob_cont)
 

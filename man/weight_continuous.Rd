@@ -4,7 +4,7 @@
 \alias{weight_continuous}
 \title{Weight for the continuous effect sizes}
 \usage{
-weight_continuous(alpha, et, m, tail = 1L, delInterval = 1e-04, ranksProb)
+weight_continuous(alpha, et, m, tail = 1L, delInterval = 0.001, ranksProb)
 }
 \arguments{
 \item{alpha}{Numeric, significance level of the hypothesis test}

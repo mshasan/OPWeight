@@ -150,7 +150,7 @@
 
 opw <- function(pvalue, filter, weight = NULL, ranksProb = NULL, mean_filterEffect = NULL,
                 mean_testEffect = NULL, effectType = c("continuous", "binary"),
-                alpha = .05, nrep = 10000, tail = 1L, delInterval = .0001,
+                alpha = .05, nrep = 10000, tail = 1L, delInterval = .001,
                 method = c("BH", "BON"), ... )
     {
         # compute the number of tests------------
