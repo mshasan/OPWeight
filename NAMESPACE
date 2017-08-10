@@ -4,8 +4,10 @@ export(prob_rank_givenEffect_approx)
 export(prob_rank_givenEffect_exact)
 export(prob_rank_givenEffect_simu)
 export(weight_binary)
+export(weight_binary_nwt)
 export(weight_by_delta)
 export(weight_continuous)
+export(weight_continuous_nwt)
 
 import(stats)
 

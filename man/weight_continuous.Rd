@@ -33,14 +33,14 @@ for the continuous effect size
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: \epsilon_i > 0,}
-then \code{et} and \code{ey} should be mean value of the test and filter
+then \code{et} and \code{ey} should be mean value of the test and covariate
 effect sizes, respectively. This is called hypothesis testing for the continuous
 effect sizes.
 }
 \examples{
 
 # compute the probabilities of the ranks of a test being rank 1 to 100 if the
-# targeted test effect is 2 and the overall mean filter effect is 1.
+# targeted test effect is 2 and the overall mean covariate effect is 1.
 ranks <- 1:100
 prob2 <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
                               m0 = 50, m1 = 50)

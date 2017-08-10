@@ -4,28 +4,30 @@
 \alias{opw}
 \title{Perform Optimal Pvalue Weighting}
 \usage{
-opw(pvalue, filter, weight = NULL, ranksProb = NULL,
-  mean_filterEffect = NULL, mean_testEffect = NULL,
-  effectType = c("continuous", "binary"), alpha = 0.05, nrep = 10000,
-  tail = 1L, delInterval = 0.001, method = c("BH", "BON"), ...)
+opw(pvalue, covariate, weight = NULL, ranksProb = NULL,
+  mean_covariateEffect = NULL, mean_testEffect = NULL,
+  effectType = c("continuous", "binary"), x0 = NULL, alpha = 0.05,
+  nrep = 10000, tail = 1L, method = c("BH", "BON"), ...)
 }
 \arguments{
 \item{pvalue}{Numeric vector of pvalues of the test statistics}
 
-\item{filter}{Numeric vector of filter statistics}
+\item{covariate}{Numeric vector of covariate statistics}
 
 \item{weight}{An optional numeric weight vector not required}
 
 \item{ranksProb}{An optional numeric vector of the ranks probability of the
-filters given the mean effect}
+covariates given the mean effect}
 
-\item{mean_filterEffect}{Numeric, value of the mean filter effect
+\item{mean_covariateEffect}{Numeric, value of the mean covariate effect
 of the true alternatives}
 
 \item{mean_testEffect}{Numeric, value of the mean test effect
 of the true alterantives}
 
 \item{effectType}{Character ("continuous" or "binary"), type of effect sizes}
+
+\item{x0}{Numeric, a initial value for the Newton-Raphson mehod.}
 
 \item{alpha}{Numeric, significance level of the hypothesis test}
 
@@ -34,10 +36,6 @@ value is 10,000, can be increased to obtain smoother probability curves}
 
 \item{tail}{Integer (1 or 2), right-tailed or two-tailed hypothesis test.
 default is right-tailed test.}
-
-\item{delInterval}{Numeric, interval between the \code{delta} values of a
-sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
-normalize the weight}
 
 \item{method}{Character ("BH" or "BON"), type of methods is used to obtain
 the results; Benjemini-Hochberg or Bonferroni}
@@ -51,97 +49,97 @@ the results; Benjemini-Hochberg or Bonferroni}
 hypothesis
 
 \code{ranksProb} Numeric vector of ranks probability given the
-mean filter effect, p(rank | ey = mean_filterEffect)
+mean covariate effect, p(rank | ey = mean_covariateEffect)
 
 \code{weight} Numeric vector of normalized weight
 
 \code{rejections} Integer, total number of rejections
 
 \code{rejections_list} data frame, list of rejected p-values and the
-corresponding filter statistics and the adjusted p-values if method = "BH" used.
+corresponding covariate statistics and the adjusted p-values if method = "BH" used.
 }
 \description{
 A function to perform weighted pvalue multiple hypothesis test.
-This function compute the probabilities of the ranks of the filter statistics
+This function compute the probabilities of the ranks of the covariate statistics
 given the effect sizes, and consequently the weights if neighter the weights
 nor the probabilities are given. Then provides the number of rejected null
 hypothesis and the list of the rejected pvalues as well as the corresponing
-filter statistics.
+covariate statistics.
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i > 0,}
-then the \code{mean_testEffect}  and \code{mean_filterEffect} should be mean
-of the test and filter effect sizes, respectively. This is called hypothesis
+then the \code{mean_testEffect}  and \code{mean_covariateEffect} should be mean
+of the test and covariate effect sizes, respectively. This is called hypothesis
 testing for the continuous effect sizes.\cr
 
 If one wants to test \deqn{H_0: epsilon_i = 0 vs. H_a: epsilon_i = epsilon,}
-then \code{mean_testEffect} and \code{mean_filterEffect} should be median or
-any discrete value of the test and filter effect sizes. This is called hypothesis
+then \code{mean_testEffect} and \code{mean_covariateEffect} should be median or
+any discrete value of the test and covariate effect sizes. This is called hypothesis
 testing for the Binary effect sizes, where \code{epsilon} refers to a fixed value.\cr
 
 The main goal of the function is to compute the probabilities of the ranks from
-the pvalues and the filter statistics, consequently the weights. Although \code{weights}
+the pvalues and the covariate statistics, consequently the weights. Although \code{weights}
 \code{ranksProb} are optional, \code{opw} has the options so that one can compute
 the probabilities and the weights externally if necessary (see examples).\cr
 
 Internally, \code{opw} function compute the \code{ranksProb} and consequently
 the weights, then uses the pvalues to make conclusions about hypotheses.
-Therefore, if \code{ranksProb} is given then \code{mean_filterEffect}
+Therefore, if \code{ranksProb} is given then \code{mean_covariateEffect}
 and are redundant, and should not be provided to the funciton.
 Although \code{ranksProb} is not required to the function,
 One can compute \code{ranksProb} by using the function
 \code{\link{prob_rank_givenEffect}}.\cr
 
-The function internally compute \code{mean_filterEffect} and \code{mean_testEffect}
+The function internally compute \code{mean_covariateEffect} and \code{mean_testEffect}
 from a simple linear regression with box-cox transformation between the test
-and filter statistics, where the filters are regressed on the test statistics.
-Thus, filters need to be positive to apply \code{boxcox} from the \code{R}
-library \code{MASS}. Then the estimated \code{mean_filterEffect} and
+and covariate statistics, where the covariates are regressed on the test statistics.
+Thus, covariates need to be positive to apply \code{boxcox} from the \code{R}
+library \code{MASS}. Then the estimated \code{mean_covariateEffect} and
 \code{mean_testEffect} are used to obtian the \code{ranksProb} and the weights.
 Thus, in order to apply the function properly, it is crucial to understand the
-uses \code{mean_filterEffect} and \code{mean_testEffect}. If \code{mean_filterEffect} and
+uses \code{mean_covariateEffect} and \code{mean_testEffect}. If \code{mean_covariateEffect} and
 \code{mean_testEffect} are not provided then the test statistics computed from
-the pvalues will be used to compute the relationship between the filter
+the pvalues will be used to compute the relationship between the covariate
 statistics and the test statistics.\cr
 
-If one of the mean effects \code{mean_filterEffect} and \code{mean_testEffect}
+If one of the mean effects \code{mean_covariateEffect} and \code{mean_testEffect}
 are not provided then the missing mean effect will be computed internally.
 }
 \examples{
-# generate pvalues and filter statistics
+# generate pvalues and covariate statistics
 m = 1000
 set.seed(3)
-filters = runif(m, min = 0, max = 2.5)          # filter statistics
+covariates = runif(m, min = 1, max = 3)          # covariate statistics
 H = rbinom(m, size = 1, prob = 0.1)             # hypothesis true or false
-tests = rnorm(m, mean = H * filters)            # Z-score
+tests = rnorm(m, mean = H * covariates)            # Z-score
 pvals = 1 - pnorm(tests)                        # pvalue
 
 # general use
-results <- opw(pvalue = pvals, filter = filters, effectType = "continuous",
+results <- opw(pvalue = pvals, covariate = covariates, effectType = "continuous",
                                               method = "BH")
 
-# supply the mean effects for both the filters and the tests externally
-mod <- lm(log(filters) ~ tests)
-et = mean(tests)
-ey = mod$coef[[1]] + mod$coef[[2]]*et
-results2 <- opw(pvalue = pvals, filter = filters,
-               mean_filterEffect = ey, mean_testEffect = et, tail = 2,
-               effectType = "continuous", method = "BH")
-
-# supply the rank probabilities externally
+# supply the mean effects for both the covariates and the tests externally
 library(qvalue)
 ranks <- 1:m
 nullProp = qvalue(p = pvals, pi0.method = "bootstrap")$pi0
 m0 = ceiling(nullProp*m)
 m1 = m - m0
+mod <- lm(log(covariates) ~ tests)
+et = mean(sort(tests, decreasing = TRUE)[1:m1], na.rm = TRUE)
+ey = mod$coef[[1]] + mod$coef[[2]]*et
+results2 <- opw(pvalue = pvals, covariate = covariates,
+               mean_covariateEffect = ey, mean_testEffect = et, tail = 2,
+               effectType = "continuous", method = "BH")
+
+# supply the rank probabilities externally
 probs <- sapply(ranks, prob_rank_givenEffect, et = ey, ey = ey,
                                         nrep = 10000, m0 = m0, m1 = m1)
-results3 <- opw(pvalue = pvals, filter = filters, ranksProb = probs,
+results3 <- opw(pvalue = pvals, covariate = covariates, ranksProb = probs,
                  effectType = "continuous", tail = 2, method = "BH")
 
 # supply weight externally
 wgt <- weight_continuous(alpha = .05, et = et, m = m, ranksProb = probs)
-results4 <- opw(pvalue = pvals, filter = filters, weight = wgt,
+results4 <- opw(pvalue = pvals, covariate = covariates, weight = wgt,
                         effectType = "continuous", alpha = .05, method = "BH")
 
 }

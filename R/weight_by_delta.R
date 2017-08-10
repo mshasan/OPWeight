@@ -9,7 +9,7 @@
 #' @param m1 Integer, number of true alternative tests
 #' @param tail Integer (1 or 2), right-tailed or two-tailed hypothesis test.
 #' default is right-tailed test.
-#' @param ranksProb Numeric vector of the ranks probability of the filter
+#' @param ranksProb Numeric vector of the ranks probability of the covariate
 #' statistics given the effect size
 #' @param effectType Character ("continuous" or "binary"), type of effect sizes
 #'
@@ -31,8 +31,8 @@
 #' delta <- seq(0, 1, .0001)
 #'
 #' # compute probability fiven effect
-#' filters = runif(100, min = 0, max = 2.5)
-#' probs <- dnorm(filters, mean = 0, sd = 1)
+#' covariates = runif(100, min = 0, max = 2.5)
+#' probs <- dnorm(covariates, mean = 0, sd = 1)
 #'
 #' # compute the sum of weights for each delta
 #' weightSum_by_delta <- sapply(delta, weight_by_delta, m = 100, m1 = 50, et = 2,

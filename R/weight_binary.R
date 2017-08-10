@@ -18,7 +18,7 @@
 #' @details
 #' If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
 #' then \code{et} and \code{ey} should be median or any discrete value of the test
-#' and filter effect sizes, respectively. This is called hypothesis testing for
+#' and covariate effect sizes, respectively. This is called hypothesis testing for
 #' the Binary effect sizes. \code{m1} can be estimated using \code{qvalue} from
 #' a bioconductor package \code{qvalue}.
 #'
@@ -37,7 +37,7 @@
 #' @examples
 #'
 #' # compute the probabilities of the ranks of a test being rank 1 to 100 if the
-#' # targeted test effect is 2 and the overall mean filter effect is 1.
+#' # targeted test effect is 2 and the overall mean covariate effect is 1.
 #' ranks <- 1:100
 #' prob2 <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
 #'                               m0 = 50, m1 = 50)
@@ -52,7 +52,7 @@
 #' plot(ranks, weight_bin)
 #'
 #===============================================================================
-# function to compute weight from p(rank=k|filterEffect=ey)
+# function to compute weight from p(rank=k|covariateEffect=ey)
 #----------------------------------------------------------------
 # internal parameters:-----
 # delta = sequene of delta (lagrange multiplier) values

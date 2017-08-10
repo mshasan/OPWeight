@@ -12,7 +12,7 @@ prob_rank_givenEffect_exact(k, et, ey, nrep = 10000, m0, m1,
 
 \item{et}{Numeric, effect of the targeted test for importance sampling}
 
-\item{ey}{Numeric, mean/median filter efffect from external information}
+\item{ey}{Numeric, mean/median covariate efffect from external information}
 
 \item{nrep}{Integer, number of replications for importance sampling}
 
@@ -32,12 +32,12 @@ information.
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
-then \code{ey} should be mean of the filter effect sizes,
+then \code{ey} should be mean of the covariate effect sizes,
 This is called hypothesis testing for the continuous effect sizes.\cr
 
 If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
 then \code{ey} should be median or any discrete value of the
-filter effect sizes. This is called hypothesis testing for the Binary
+covariate effect sizes. This is called hypothesis testing for the Binary
 effect sizes.\cr
 
 \code{m1} and \code{m0} can be estimated using \code{qvalue} from
@@ -50,7 +50,7 @@ prob <- prob_rank_givenEffect_exact(k=3, et=0, ey=0, nrep=10000, m0=50, m1=50,
                                 effectType= "continuous")
 
 # compute the probabilities of the ranks of a test being rank 1 to 100 if the
-# targeted test effect is 2 and the overall mean filter effect is 1.
+# targeted test effect is 2 and the overall mean covariate effect is 1.
 ranks <- 1:100
 prob <- sapply(ranks, prob_rank_givenEffect, et = 2, ey = 1, nrep = 10000,
                               m0 = 50, m1 = 50)

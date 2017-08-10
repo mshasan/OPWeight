@@ -11,7 +11,7 @@ prob_rank_givenEffect_simu(s, ey, e.one, m0, m1, effectType = c("binary",
 \item{s}{number of samples of test statistics composed of null and alternative
 tests}
 
-\item{ey}{Numeric, filter test efffect from the external information}
+\item{ey}{Numeric, covariate test efffect from the external information}
 
 \item{e.one}{Numeric, one test effect that will vary across all tests}
 
@@ -32,12 +32,12 @@ information.
 }
 \details{
 If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
-then \code{ey} should be mean of the filter effect sizes,
+then \code{ey} should be mean of the covariate effect sizes,
 This is called hypothesis testing for the continuous effect sizes.\cr
 
 If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
 then \code{ey} should be median or any discrete value of the
-filter effect sizes. This is called hypothesis testing for the Binary
+covariate effect sizes. This is called hypothesis testing for the Binary
 effect sizes.\cr
 
 This is a simulation approach to compute the probability of the rank,

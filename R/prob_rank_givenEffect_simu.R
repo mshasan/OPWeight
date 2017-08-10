@@ -5,19 +5,19 @@
 #' information.
 #' @param s number of samples of test statistics composed of null and alternative
 #'  tests
-#' @param ey Numeric, filter test efffect from the external information
+#' @param ey Numeric, covariate test efffect from the external information
 #' @param e.one Numeric, one test effect that will vary across all tests
 #' @param m0 Integer, number of true null hypothesis
 #' @param m1 Integer, number of true alternative hypothesis
 #' @param effectType Character ("continuous" or "binary"), type of effect sizes
 #'
 #' @details If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i > 0,}
-#' then \code{ey} should be mean of the filter effect sizes,
+#' then \code{ey} should be mean of the covariate effect sizes,
 #' This is called hypothesis testing for the continuous effect sizes.\cr
 #'
 #' If one wants to test \deqn{H_0: epsilon_i=0 vs. H_a: epsilon_i = epsilon,}
 #' then \code{ey} should be median or any discrete value of the
-#' filter effect sizes. This is called hypothesis testing for the Binary
+#' covariate effect sizes. This is called hypothesis testing for the Binary
 #' effect sizes.\cr
 #'
 #' This is a simulation approach to compute the probability of the rank,
@@ -72,7 +72,7 @@
 #' matplot(1:m, cbind(prob0, prob1), type = "l")
 #'
 #===============================================================================
-# function to compute p(rank=k|filterEffect=ey) by simulation
+# function to compute p(rank=k|covariateEffect=ey) by simulation
 #--------------------------------------------------------------
 # we used only uniform effects for continuous case.
 # internal parameters:-----
