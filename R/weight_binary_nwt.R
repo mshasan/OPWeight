@@ -64,13 +64,13 @@ weight_binary_nwt <- function(alpha, m1, et, ranksProb, x0 = NULL)
     # the goal is to find the zero of the function f below
     f <- function(c)
     {
-        sum(pnorm(et/2 + c/et + log(m/(alpha*prob))/et, lower.tail = FALSE)) - alpha
+        sum(pnorm(et/2 + c/et + log(m/(alpha*m1*prob))/et, lower.tail = FALSE)) - alpha
     }
 
     # first derivative of f---------
     df <- function(c)
     {
-        sum(-dnorm(et/2 + c/et + log(m/(alpha*prob))/et)/et)
+        sum(-dnorm(et/2 + c/et + log(m/(alpha*m1*prob))/et)/et)
     }
 
     # applying Newton's method--------------
@@ -112,7 +112,7 @@ weight_binary_nwt <- function(alpha, m1, et, ranksProb, x0 = NULL)
     c <- x[k - 1] # could return this
 
     #compute weights and set output
-    w <- (m/alpha)*pnorm(et/2 + c/et - log(alpha*prob)/et, lower.tail = FALSE)
+    w <- (m/alpha)*pnorm(et/2 + c/et + log(m/(alpha*m1*prob))/et, lower.tail = FALSE)
     lambda <- exp(c)
 
     # error checking---------
