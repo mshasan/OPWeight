@@ -10,8 +10,10 @@ The large scale multiple testing inherent to high throughput biological data nec
 You can install the package as follows:
 
 ```{r}
-source("https://bioconductor.org/biocLite.R")
-biocLite("OPWeight")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("OPWeight")
 ```
 
 
