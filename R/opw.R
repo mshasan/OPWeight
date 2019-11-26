@@ -268,9 +268,9 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
         } else {
           dataOut <- data.frame(OD, ranksProb, weight=wgt, adjPvalue=padj, nullReject=reject)
         }
-        
+
         rejections_list = dataOut[which(dataOut$nullReject == TRUE), ]
-        n_rejections = sum(dataOut$nullReject == TRUE)
+        n_rejections = length(which(dataOut$nullReject == TRUE))
 
         return(list(totalTests = m,
                     nullProp = nullProp,
