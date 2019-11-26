@@ -44,14 +44,21 @@ Load required libraries
 
 ```{r loadlibs, message=FALSE, warning=FALSE}
 # install OPWeight package
-source("https://bioconductor.org/biocLite.R")
-biocLite("OPWeight", suppressUpdates=TRUE)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("OPWeight")
+
+# source("https://bioconductor.org/biocLite.R")
+# biocLite("OPWeight", suppressUpdates=TRUE)
 
 # load packages
-library("OPWeight")
-library("ggplot2")
-library("airway")
-library("DESeq2")
+library(tidyverse)
+library(OPWeight)
+library(ggplot2)
+library(airway)
+library(DESeq2)
+library(dplyr)
+library(rlang)
 library(cowplot)
 library(tibble)
 library(qvalue)
@@ -64,7 +71,7 @@ Process RNA-seq data
 data("airway", package = "airway")
 dds <- DESeqDataSet(se = airway, design = ~ cell + dex)
 dds <- DESeq(dds)
-de_res_air <- results(dds)
+de_res_air <- as.data.frame(results(dds))
 ```
 
 The output is a `r class(de_res_air)` object containing the following columns for each gene in which each gene corresponds to a hypothesis test:
@@ -79,7 +86,8 @@ From the above columns, we will consider `baseMean` as the covariate. In the `r 
 First we will load the proposed package `r Biocpkg("OPWeight")` and then show the steps to conduct $CRW$ tests:
 
 ```{r loadOPWeight, message=FALSE, warning=FALSE}
-covariates = de_res_air$baseMean + .0001  # add a small constant to make all values positive
+# add a small constant to make all values positive
+covariates = de_res_air$baseMean + .0001  
 set.seed(123)
 # one should use more nrep to obtain more acurate results
 opw_results <- opw(pvalue = de_res_air$pvalue, covariate = covariates, nrep = 1000,

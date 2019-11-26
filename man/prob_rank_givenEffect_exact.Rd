@@ -4,8 +4,15 @@
 \alias{prob_rank_givenEffect_exact}
 \title{Probability of rank of test given effect size by exact method}
 \usage{
-prob_rank_givenEffect_exact(k, et, ey, nrep = 10000, m0, m1,
-  effectType = c("binary", "continuous"))
+prob_rank_givenEffect_exact(
+  k,
+  et,
+  ey,
+  nrep = 10000,
+  m0,
+  m1,
+  effectType = c("binary", "continuous")
+)
 }
 \arguments{
 \item{k}{Integer, rank of a test}

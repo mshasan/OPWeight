@@ -4,8 +4,15 @@
 \alias{prob_rank_givenEffect_approx}
 \title{Probability of rank of test given effect size by normal approximation}
 \usage{
-prob_rank_givenEffect_approx(k, et, ey, nrep = 10000, m0, m1,
-  effectType = c("binary", "continuous"))
+prob_rank_givenEffect_approx(
+  k,
+  et,
+  ey,
+  nrep = 10000,
+  m0,
+  m1,
+  effectType = c("binary", "continuous")
+)
 }
 \arguments{
 \item{k}{Integer, rank of a test}

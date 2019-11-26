@@ -4,8 +4,14 @@
 \alias{prob_rank_givenEffect_simu}
 \title{Probability of rank of test given effect size by simulations}
 \usage{
-prob_rank_givenEffect_simu(s, ey, e.one, m0, m1, effectType = c("binary",
-  "continuous"))
+prob_rank_givenEffect_simu(
+  s,
+  ey,
+  e.one,
+  m0,
+  m1,
+  effectType = c("binary", "continuous")
+)
 }
 \arguments{
 \item{s}{number of samples of test statistics composed of null and alternative

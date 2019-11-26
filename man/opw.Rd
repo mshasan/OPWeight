@@ -4,10 +4,22 @@
 \alias{opw}
 \title{Perform Optimal Pvalue Weighting}
 \usage{
-opw(pvalue, covariate, weight = NULL, ranksProb = NULL,
-  mean_covariateEffect = NULL, mean_testEffect = NULL,
-  effectType = c("continuous", "binary"), x0 = NULL, alpha = 0.05,
-  nrep = 10000, tail = 1L, method = c("BH", "BON"), ...)
+opw(
+  pvalue,
+  covariate,
+  weight = NULL,
+  ranksProb = NULL,
+  mean_covariateEffect = NULL,
+  mean_testEffect = NULL,
+  effectType = c("continuous", "binary"),
+  x0 = NULL,
+  alpha = 0.05,
+  nrep = 10000,
+  tail = 2L,
+  delInterval = 0.001,
+  method = c("BH", "BON"),
+  ...
+)
 }
 \arguments{
 \item{pvalue}{Numeric vector of pvalues of the test statistics}
@@ -37,6 +49,10 @@ value is 10,000, can be increased to obtain smoother probability curves}
 \item{tail}{Integer (1 or 2), right-tailed or two-tailed hypothesis test.
 default is right-tailed test.}
 
+\item{delInterval}{Numeric, interval between the \code{delta} values of a
+sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
+normalize the weight}
+
 \item{method}{Character ("BH" or "BON"), type of methods is used to obtain
 the results; Benjemini-Hochberg or Bonferroni}
 
@@ -48,15 +64,13 @@ the results; Benjemini-Hochberg or Bonferroni}
 \code{nullProp} Numeric, estimated propotion of the true null
 hypothesis
 
-\code{ranksProb} Numeric vector of ranks probability given the
-mean covariate effect, p(rank | ey = mean_covariateEffect)
-
-\code{weight} Numeric vector of normalized weight
-
 \code{rejections} Integer, total number of rejections
 
-\code{rejections_list} data frame, list of rejected p-values and the
+\code{rejections_list} Data frame, list of rejected p-values and the
 corresponding covariate statistics and the adjusted p-values if method = "BH" used.
+
+\code{dataOut} Data frame, ordered covariate and the corresponding pvalues,
+ranks probabilities, weights, weight-adjusted pvalues, and decision of null rejection.
 }
 \description{
 A function to perform weighted pvalue multiple hypothesis test.

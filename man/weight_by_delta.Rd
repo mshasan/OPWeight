@@ -4,8 +4,16 @@
 \alias{weight_by_delta}
 \title{Find sum of weights for the LaGrange multiplier}
 \usage{
-weight_by_delta(delta, alpha = 0.05, et, m, m1, tail = 1L, ranksProb,
-  effectType = c("continuous", "binary"))
+weight_by_delta(
+  delta,
+  alpha = 0.05,
+  et,
+  m,
+  m1,
+  tail = 1L,
+  ranksProb,
+  effectType = c("continuous", "binary")
+)
 }
 \arguments{
 \item{delta}{Numeric value of the LagRange multiplier}

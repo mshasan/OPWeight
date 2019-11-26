@@ -23,7 +23,7 @@
 #'
 #' @export
 #'
-#' @import OPWeight prob_rank_givenEffect
+# #' @import OPWeight
 #'
 #' @seealso \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
 #'

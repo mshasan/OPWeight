@@ -23,9 +23,9 @@
 #' value is 10,000, can be increased to obtain smoother probability curves
 #' @param tail Integer (1 or 2), right-tailed or two-tailed hypothesis test.
 #' default is right-tailed test.
-# #' @param delInterval Numeric, interval between the \code{delta} values of a
-# #' sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
-# #' normalize the weight
+#' @param delInterval Numeric, interval between the \code{delta} values of a
+#' sequence. Note that, \code{delta} is a LaGrange multiplier, necessary to
+#' normalize the weight
 #' @param method Character ("BH" or "BON"), type of methods is used to obtain
 #' the results; Benjemini-Hochberg or Bonferroni
 #' @param ... Arguments passed to internal functions
@@ -75,7 +75,7 @@
 #'
 #' @import qvalue qvalue
 #' @import tibble tibble
-#' @import MASS boxcox
+#' @import MASS
 #'
 #' @seealso \code{\link{prob_rank_givenEffect}} \code{\link{weight_binary}}
 #' \code{\link{weight_continuous}} \code{\link{qvalue}} \code{\link{dnorm}}
@@ -84,13 +84,11 @@
 #' @return \code{totalTests} Integer, total number of hypothesis tests evaluated
 #' @return \code{nullProp} Numeric, estimated propotion of the true null
 #' hypothesis
-#' @return \code{ranksProb} Numeric vector of ranks probability given the
-#' mean covariate effect, p(rank | ey = mean_covariateEffect)
-#' @return \code{weight} Numeric vector of normalized weight
 #' @return \code{rejections} Integer, total number of rejections
-#' @return \code{rejections_list} data frame, list of rejected p-values and the
+#' @return \code{rejections_list} Data frame, list of rejected p-values and the
 #' corresponding covariate statistics and the adjusted p-values if method = "BH" used.
-#'
+#' @return \code{dataOut} Data frame, ordered covariate and the corresponding pvalues,
+#' ranks probabilities, weights, weight-adjusted pvalues, and decision of null rejection.
 #'
 #' @examples
 #' # generate pvalues and covariate statistics
@@ -152,7 +150,8 @@
 opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
             mean_covariateEffect = NULL, mean_testEffect = NULL,
             effectType = c("continuous", "binary"), x0 = NULL,
-            alpha = .05, nrep = 10000, tail = 1L, method = c("BH", "BON"), ... )
+            alpha = .05, nrep = 10000, tail = 2L, delInterval = .001,
+            method = c("BH", "BON"), ... )
     {
         # compute the number of tests------------
         m = length(pvalue)
@@ -208,7 +207,7 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
                         stop("covariate statistics need to be positive")
                     }
 
-                    bc <- boxcox(covariate ~ test)
+                    bc <- MASS::boxcox(covariate ~ test)
                     lambda <- bc$x[which.max(bc$y)]
 
                     if(lambda == 0){
@@ -230,17 +229,24 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
             # compute the weights (always right-tailed)------------
             message("computing weights")
             if(effectType == "continuous"){
-                wgt = weight_continuous_nwt(alpha = alpha, et = mean_testEffect,
-                                            ranksProb = ranksProb)$w
-                # wgt = weight_continuous(alpha = alpha, et = mean_testEffect, m = m,
-                #                         tail = 1, delInterval = delInterval,
-                #                         ranksProb = ranksProb)
+                if(mean_testEffect > 1){
+                    wgt = weight_continuous_nwt(alpha = alpha, et = mean_testEffect,
+                                                ranksProb = ranksProb)$w
+                } else {
+                    wgt = weight_continuous(alpha = alpha, et = mean_testEffect, m = m,
+                                            tail = tail, delInterval = delInterval,
+                                            ranksProb = ranksProb)
+                }
+
             } else {
-                wgt = weight_binary_nwt(alpha = alpha, m1 = m1,
-                            et = mean_testEffect, ranksProb = ranksProb)
-                # wgt = weight_binary(alpha = alpha, et = mean_testEffect, m = m,
-                #                     m1 = m1, tail = 1, delInterval = delInterval,
-                #                     ranksProb = ranksProb)
+                if(mean_testEffect > 1){
+                    wgt = weight_binary_nwt(alpha = alpha, m1 = m1,
+                                et = mean_testEffect, ranksProb = ranksProb)$w
+                } else {
+                    wgt = weight_binary(alpha = alpha, et = mean_testEffect, m = m,
+                                        m1 = m1, tail = tail, delInterval = delInterval,
+                                        ranksProb = ranksProb)
+                }
             }
             message("finished computing the weights")
         }
@@ -248,19 +254,29 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
         message("comparing pvalues with thresholds")
         if(method == "BH"){
             padj <- p.adjust(Ordered.pvalue/wgt, method = "BH")
-            OD <- add_column(OD, padj)
-            rejections_list = OD[which((padj <= alpha) == TRUE), ]
+            #OD <- add_column(OD, padj)
+            reject <- (padj <= alpha)
+            #rejections_list = OD[which(reject == TRUE), ]
         } else {
-            rejections_list = OD[which((Ordered.pvalue <= alpha*wgt/m) == TRUE), ]
+            reject <- Ordered.pvalue <= alpha*wgt/m
+            #rejections_list = OD[which(reject == TRUE), ]
         }
 
-
         # outputs--------------
-        n_rejections = dim(rejections_list)[1]
+        if(!is.null(weight)){
+          dataOut <- data.frame(OD, weight=wgt, adjPvalue=padj, nullReject=reject)
+        } else {
+          dataOut <- data.frame(OD, ranksProb, weight=wgt, adjPvalue=padj, nullReject=reject)
+        }
+        
+        rejections_list = dataOut[which(dataOut$nullReject == TRUE), ]
+        n_rejections = sum(dataOut$nullReject == TRUE)
 
-        return(list(totalTests = m, nullProp = nullProp,
-                    ranksProb = ranksProb, weight = wgt,
-                    rejections = n_rejections, rejections_list = rejections_list))
+        return(list(totalTests = m,
+                    nullProp = nullProp,
+                    rejections = n_rejections,
+                    rejections_list = rejections_list,
+                    dataOut = dataOut))
     }
 
 
