@@ -176,13 +176,14 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
             test <- qnorm(pvalue/tail, lower.tail = FALSE)
             test[which(!is.finite(test))] <- NA
             Data2 = add_column(Data, test)
-            OD2 <- Data2[order(Data2$test, decreasing=TRUE), ][1:m1, ]
+            #OD2 <- Data2[order(Data2$test, decreasing=TRUE), ][1:m1, ]
+            OD2 <- Data2[order(Data2$covariate, decreasing=TRUE), ][1:m1, ]
 
             # estimate the true alterantive test effect sizes----------------
             if(m1 == 0){
                 test_effect_vec <- 0
             } else {
-                test_effect_vec <-  sort(test, decreasing = TRUE)[1:m1]
+                test_effect_vec <-  OD2$test
             }
 
             # estimate the mean test effect size-------------
