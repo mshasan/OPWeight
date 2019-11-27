@@ -160,7 +160,7 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
         m1 = m - m0
 
 
-        # formulate a data set-------------
+        # formulate a data set and order by covariate-------------
         Data = tibble(pvalue, covariate)
         OD <- Data[order(Data$covariate, decreasing=TRUE), ]
         Ordered.pvalue <- OD$pvalue
@@ -171,9 +171,12 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
             wgt <- weight
         } else {
 
-            # compute test statistics from the pvalues---------
+            # compute test statistics from the pvalues and
+            # keep top m1 tests for regression ---------
             test <- qnorm(pvalue/tail, lower.tail = FALSE)
             test[which(!is.finite(test))] <- NA
+            Data2 = add_column(Data, test)
+            OD2 <- Data2[order(Data2$test, decreasing=TRUE), ][1:m1, ]
 
             # estimate the true alterantive test effect sizes----------------
             if(m1 == 0){
@@ -207,13 +210,13 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
                         stop("covariate statistics need to be positive")
                     }
 
-                    bc <- MASS::boxcox(covariate ~ test)
+                    bc <- MASS::boxcox(covariate ~ test, data = OD2)
                     lambda <- bc$x[which.max(bc$y)]
 
                     if(lambda == 0){
-                        model <- lm(log(covariate + .0001) ~ test)
+                        model <- lm(log(covariate + .0001) ~ test, data = OD2)
                     } else {
-                        model <- lm(covariate**lambda ~ test)
+                        model <- lm(covariate**lambda ~ test, data = OD2)
                     }
                     mean_covariateEffect <- model$coef[[1]] + model$coef[[2]]*mean_testEffect
                 }
@@ -274,6 +277,8 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
 
         return(list(totalTests = m,
                     nullProp = nullProp,
+                    mean_testEffect = mean_testEffect,
+                    mean_covariateEffect = mean_covariateEffect,
                     rejections = n_rejections,
                     rejections_list = rejections_list,
                     dataOut = dataOut))
