@@ -85,6 +85,9 @@
 #' @return \code{nullProp} Numeric, estimated propotion of the true null
 #' hypothesis
 #' @return \code{rejections} Integer, total number of rejections
+#' @return \code{mean_testEffect} Numeric, mean of the alternative test effects
+#' @return \code{mean_covariateEffect} Numeric, mean of the covariate effects
+#' corresponding to the mean of the alternative test effects
 #' @return \code{rejections_list} Data frame, list of rejected p-values and the
 #' corresponding covariate statistics and the adjusted p-values if method = "BH" used.
 #' @return \code{dataOut} Data frame, ordered covariate and the corresponding pvalues,
@@ -176,8 +179,7 @@ opw <- function(pvalue, covariate, weight = NULL, ranksProb = NULL,
             test <- qnorm(pvalue/tail, lower.tail = FALSE)
             test[which(!is.finite(test))] <- NA
             Data2 = add_column(Data, test)
-            #OD2 <- Data2[order(Data2$test, decreasing=TRUE), ][1:m1, ]
-            OD2 <- Data2[order(Data2$covariate, decreasing=TRUE), ][1:m1, ]
+            OD2 <- Data2[order(Data2$test, decreasing=TRUE), ][1:m1, ]
 
             # estimate the true alterantive test effect sizes----------------
             if(m1 == 0){
