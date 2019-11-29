@@ -59,17 +59,18 @@ the results; Benjemini-Hochberg or Bonferroni}
 \item{...}{Arguments passed to internal functions}
 }
 \value{
-\code{totalTests} Integer, total number of hypothesis tests evaluated
+\code{totalTests} Integer, total number of hypothesis tests evaluated.
 
-\code{nullProp} Numeric, estimated propotion of the true null
-hypothesis
+\code{nullProp} Numeric, estimated propotion of the true null.
+hypothesis.
 
-\code{rejections} Integer, total number of rejections
+\code{rejections} Integer, total number of rejections.
 
-\code{mean_testEffect} Numeric, mean of the alternative test effects
+\code{mean_testEffect} Numeric, mean of the alternative test effects.
+Note: for binary case, it is median of the alternative test effects.
 
 \code{mean_covariateEffect} Numeric, mean of the covariate effects
-corresponding to the mean of the alternative test effects
+corresponding to the mean of the alternative test effects.
 
 \code{rejections_list} Data frame, list of rejected p-values and the
 corresponding covariate statistics and the adjusted p-values if method = "BH" used.
