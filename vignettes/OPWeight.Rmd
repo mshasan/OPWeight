@@ -44,9 +44,9 @@ Load required libraries
 
 ```{r loadlibs, message=FALSE, warning=FALSE}
 # install OPWeight package
-# if (!requireNamespace("BiocManager", quietly = TRUE))
-#     install.packages("BiocManager")
-# BiocManager::install("OPWeight")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("OPWeight")
 
 # load packages
 library(OPWeight)
